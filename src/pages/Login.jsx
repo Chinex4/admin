@@ -2,7 +2,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object().shape({
 	email: yup.string().email('Invalid email').required('Email is required'),
@@ -16,21 +19,22 @@ const schema = yup.object().shape({
 });
 
 const Login = () => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { loading } = useSelector((state) => state.auth);
+
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 	} = useForm({
 		resolver: yupResolver(schema),
 	});
 
 	const onSubmit = async (data) => {
-		try {
-			// replace with API call
-			console.log(data);
-			toast.success('Logged in successfully');
-		} catch (err) {
-			toast.error('Login failed');
+		const result = await dispatch(loginUser(data));
+		if (result.meta.requestStatus === 'fulfilled') {
+			navigate('/dashboard/users');
 		}
 	};
 
@@ -72,9 +76,9 @@ const Login = () => {
 
 				<button
 					type='submit'
-					disabled={isSubmitting}
+					disabled={loading}
 					className='w-full bg-lime-400 text-black font-semibold py-2 rounded-md hover:bg-lime-300 transition'>
-					{isSubmitting ? 'Logging in...' : 'Login'}
+					{loading ? 'Logging in...' : 'Login'}
 				</button>
 			</form>
 		</div>

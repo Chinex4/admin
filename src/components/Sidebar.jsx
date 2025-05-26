@@ -48,8 +48,8 @@ import { X } from 'lucide-react'; // already using Menu, import X too
 const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 	return (
 		<aside
-			className={`h-screen bg-[#111111] border-r border-gray-800 transition-all duration-300 ${
-				isCollapsed ? 'w-16' : 'w-64'
+			className={`h-screen overflow-y-auto bg-[#111111] border-r border-gray-800 transition-all duration-300 ${
+				isCollapsed ? 'w-16' : 'w-72'
 			} hidden md:block`}>
 			{/* Mobile close button */}
 			<div className='flex justify-between items-center px-4 py-3 md:hidden border-b border-gray-800'>
@@ -80,11 +80,11 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 						className='block hover:text-lime-400'>
 						Everything About the User
 					</Link>
-					<Link
+					{/* <Link
 						to='/dashboard/users/kyc'
 						className='block hover:text-lime-400'>
 						KYC Info
-					</Link>
+					</Link> */}
 				</SidebarItem>
 
 				<SidebarItem
@@ -92,9 +92,24 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 					label='Transaction Table'
 					isCollapsed={isCollapsed}>
 					<Link
-						to='/dashboard/transactions'
+						to='/dashboard/viewDeposits'
 						className='block hover:text-lime-400'>
-						All Transactions
+						About Deposit
+					</Link>
+					<Link
+						to='/dashboard/viewWithdrawal'
+						className='block hover:text-lime-400'>
+						About Crypto Withdrawal
+					</Link>
+					<Link
+						to='/dashboard/viewProfits'
+						className='block hover:text-lime-400'>
+						About Profit
+					</Link>
+					<Link
+						to='/dashboard/viewLosses'
+						className='block hover:text-lime-400'>
+						About Loss
 					</Link>
 				</SidebarItem>
 
@@ -103,9 +118,9 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 					label='Trade Table'
 					isCollapsed={isCollapsed}>
 					<Link
-						to='/dashboard/trades'
+						to='/dashboard/viewTrades'
 						className='block hover:text-lime-400'>
-						Trade History
+						About Trade
 					</Link>
 				</SidebarItem>
 
@@ -114,20 +129,95 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 					label='Wallet Table'
 					isCollapsed={isCollapsed}>
 					<Link
-						to='/dashboard/wallets'
+						to='/dashboard/viewBrokersWallet'
 						className='block hover:text-lime-400'>
-						Wallet Balances
+						About Broker's Wallet
 					</Link>
 				</SidebarItem>
 
 				<SidebarItem
 					icon={Bell}
-					label='Notifications'
+					label='KYC/Proof of payment'
 					isCollapsed={isCollapsed}>
 					<Link
-						to='/dashboard/notifications'
+						to='/dashboard/viewProofs'
 						className='block hover:text-lime-400'>
-						System Alerts
+						About proof of payment
+					</Link>
+					<Link
+						to='/dashboard/viewKyc'
+						className='block hover:text-lime-400'>
+						About Kyc
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Copy Traders Table'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewCopyTraders'
+						className='block hover:text-lime-400'>
+						About Copy Trader
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Subscribed User Table'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewCopiedTraders'
+						className='block hover:text-lime-400'>
+						View All Copy Trader
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Signal Table'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewSignalTraders'
+						className='block hover:text-lime-400'>
+						About SIgnal Traders
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Activate Copy Trade'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/activateCopy'
+						className='block hover:text-lime-400'>
+						About Activate Copy Traders
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='About Staking'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewAllStaking'
+						className='block hover:text-lime-400'>
+						View all Staking
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Stake Request'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewAllStakeRequest'
+						className='block hover:text-lime-400'>
+						View all Stake Request
+					</Link>
+				</SidebarItem>
+				<SidebarItem
+					icon={Bell}
+					label='Login'
+					isCollapsed={isCollapsed}>
+					<Link
+						to='/dashboard/viewAllStakeRequest'
+						className='block hover:text-lime-400'>
+						Login
 					</Link>
 				</SidebarItem>
 			</nav>
