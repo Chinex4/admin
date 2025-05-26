@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../slices/authSlice';
+import { loginUser } from '../redux/thunks/authThunk';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,10 +32,11 @@ const Login = () => {
 	});
 
 	const onSubmit = async (data) => {
-		const result = await dispatch(loginUser(data));
-		if (result.meta.requestStatus === 'fulfilled') {
+		const resultAction = await dispatch(loginUser(data));
+		if (loginUser.fulfilled.match(resultAction)) {
 			navigate('/dashboard/users');
 		}
+		// No need to handle toast here — it's handled in the thunk already
 	};
 
 	return (
@@ -68,9 +69,7 @@ const Login = () => {
 						className='w-full px-4 py-2 bg-[#2a2a2a] border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-400'
 					/>
 					{errors.password && (
-						<p className='text-red-500 text-sm mt-1'>
-							{errors.password.message}
-						</p>
+						<p className='text-red-500 text-sm mt-1'>{errors.password.message}</p>
 					)}
 				</div>
 
