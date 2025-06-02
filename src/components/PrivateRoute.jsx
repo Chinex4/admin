@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 const PrivateRoute = () => {
-	const isAuthenticated = !!localStorage.getItem('token'); // or use a Redux/auth context
+	const isAuthenticated = !!localStorage.getItem('admin_id'); 
 
 	return !isAuthenticated ? (
 		<Outlet />

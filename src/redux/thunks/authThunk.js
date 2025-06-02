@@ -12,11 +12,10 @@ export const loginUser = createAsyncThunk(
 
       if (!userId) throw new Error("Invalid response format");
 
-      localStorage.setItem("admin_id", userId); // ✅ store the ID only
-
+      localStorage.setItem("admin_id", userId);  
       toast.success("Login successful");
 
-      return { userId }; // ✅ return only the ID
+      return { userId };  
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed");
       return rejectWithValue(error.response?.data || error.message);
