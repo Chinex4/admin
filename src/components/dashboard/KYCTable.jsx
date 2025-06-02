@@ -46,7 +46,7 @@ const KycTable = () => {
 				onChange={(e) => setSearch(e.target.value)}
 				className='w-full mb-4 px-4 py-2 rounded-md bg-[#111] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400'
 			/>
-			<div className='overflow-x-auto rounded-xl'>
+			<div className='overflow-x-auto rounded-xl scrollbar-hide'>
 				<table className='table-auto text-sm text-left text-white w-full'>
 					<thead className='bg-[#121212] text-gray-300'>
 						<tr>

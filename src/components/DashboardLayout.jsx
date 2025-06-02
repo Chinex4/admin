@@ -49,6 +49,12 @@ const DashboardLayout = () => {
 					>
 						<Menu />
 					</button>
+
+					<div>
+						<button className='bg-red-500 px-6 py-3 rounded-md text-white'>
+							Log Out
+						</button>
+					</div>
 				</header>
 
 				{/* Main scroll area */}

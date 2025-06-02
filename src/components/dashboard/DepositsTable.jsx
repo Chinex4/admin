@@ -57,7 +57,7 @@ const DepositsTable = () => {
 	return (
 		<div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
 			<h2 className='text-xl font-semibold text-white mb-4'>All Deposits</h2>
-			<div className='overflow-x-auto rounded-xl'>
+			<div className='overflow-x-auto rounded-xl scrollbar-hide'>
 				<table className='table-auto text-sm text-left text-white w-full'>
 					<thead className='bg-[#121212] text-gray-300'>
 						<tr>
