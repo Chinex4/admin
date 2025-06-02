@@ -1,12 +1,12 @@
 // redux/slices/authSlice.js
-import { createSlice } from '@reduxjs/toolkit';
-import { loginUser, logoutUser } from '../redux/thunks/authThunk';
+import { createSlice } from "@reduxjs/toolkit";
+import { loginUser, logoutUser } from "../redux/thunks/authThunk";
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem('user')) || null,
-    token: localStorage.getItem('token') || null,
+    user: null,
+    token: null,
     loading: false,
     error: null,
   },
@@ -18,10 +18,11 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.token = null; // You aren't using any token here
+        state.user = action.payload.userId; // ✅ store just the user ID
         state.error = null;
       })
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
