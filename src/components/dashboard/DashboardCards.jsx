@@ -50,7 +50,7 @@ const DashboardCards = ({ cardData }) => {
         {isCycling && (
           <button
             onClick={handleColorCycle}
-            className='flex items-center gap-2 text-sm text-gray-700 bg-white px-3 py-1 rounded-md shadow hover:bg-gray-100 transition'
+            className='flex items-center gap-2 text-sm text-white bg-gradient-to-r from-stone-900 to-stone-800 hover:bg-stone-800/80 transition-all duration-300 px-3 rounded-md shadow py-2'
           >
             <PauseCircle size={16} />
             Stop Color Change
