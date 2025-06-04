@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { DoorOpen, Menu } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/thunks/authThunk";
 import Cookies from "js-cookie";
@@ -62,8 +62,8 @@ const DashboardLayout = () => {
           </button>
 
           <div onClick={handleLogout}>
-            <button className='bg-red-500 px-6 py-3 rounded-md text-white'>
-              Log Out
+            <button className='bg-red-500 px-6 py-2 rounded-md text-white'>
+              <span>Log out</span>
             </button>
           </div>
         </header>

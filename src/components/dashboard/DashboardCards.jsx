@@ -1,16 +1,38 @@
-import { useState } from 'react';
-import { PaintBucket } from 'lucide-react';
+import { useState, useEffect, useRef } from "react";
+import { PauseCircle } from "lucide-react";
 
 const DashboardCards = ({ cardData }) => {
-  const [cardBg, setCardBg] = useState('bg-lime-400');
+  const gradientClasses = [
+    "bg-gradient-to-r from-lime-400 to-green-500",
+    "bg-gradient-to-r from-blue-500 to-indigo-600",
+    "bg-gradient-to-r from-purple-500 to-pink-500",
+    "bg-gradient-to-r from-amber-400 to-orange-500",
+    "bg-gradient-to-r from-teal-400 to-cyan-500",
+    "bg-gradient-to-r from-red-500 to-yellow-500",
+  ];
 
-  const handleColorChange = () => {
-    // Cycle through a few Tailwind colors — you can expand this as needed
-    const colors = ['bg-lime-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-amber-500'];
-    const currentIndex = colors.indexOf(cardBg);
-    const nextIndex = (currentIndex + 1) % colors.length;
-    setCardBg(colors[nextIndex]);
+  const [cardBg, setCardBg] = useState(gradientClasses[0]);
+  const [isCycling, setIsCycling] = useState(true);
+  const intervalRef = useRef(null);
+
+  const handleColorCycle = () => {
+    setIsCycling(false);
+    clearInterval(intervalRef.current);
   };
+
+  useEffect(() => {
+    if (isCycling) {
+      intervalRef.current = setInterval(() => {
+        setCardBg((prev) => {
+          const currentIndex = gradientClasses.indexOf(prev);
+          const nextIndex = (currentIndex + 1) % gradientClasses.length;
+          return gradientClasses[nextIndex];
+        });
+      }, 2000);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [isCycling]);
 
   if (!cardData || cardData.length === 0) {
     return (
@@ -25,22 +47,24 @@ const DashboardCards = ({ cardData }) => {
   return (
     <section className='px-4 py-6 space-y-4'>
       <div className='flex justify-end'>
-        <button
-          onClick={handleColorChange}
-          className='flex items-center gap-2 text-sm text-gray-700 bg-white px-3 py-1 rounded-md shadow hover:bg-gray-100 transition'
-        >
-          <PaintBucket size={16} />
-          Change Card Color
-        </button>
+        {isCycling && (
+          <button
+            onClick={handleColorCycle}
+            className='flex items-center gap-2 text-sm text-gray-700 bg-white px-3 py-1 rounded-md shadow hover:bg-gray-100 transition'
+          >
+            <PauseCircle size={16} />
+            Stop Color Change
+          </button>
+        )}
       </div>
 
       <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
         {cardData.map((card, index) => (
           <div
             key={index}
-            className={`${cardBg} rounded-xl p-6 text-black shadow-lg flex flex-col justify-between`}
+            className={`${cardBg} rounded-xl p-6 text-white shadow-lg flex flex-col justify-between`}
           >
-            <div className='flex justify-center'>{card.icon}</div>
+            <div className='flex justify-left'>{card.icon}</div>
             <div className='mt-8'>
               <p className='text-lg font-semibold'>{card.label}</p>
               <p className='text-2xl font-bold mt-1'>{card.value}</p>
