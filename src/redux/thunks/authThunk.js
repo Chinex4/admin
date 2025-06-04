@@ -11,10 +11,9 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axiosInstance.post("admin/login", credentials);
       const userId = response?.data?.message?.id;
-
       if (!userId) throw new Error("Invalid response format");
 
-      Cookies.set("admin_id", userId, { expires: 1 / 24 }); // 1 hour
+      Cookies.set("admin_id", userId, { expires: 1 / 24 });  
       toast.success("Login successful");
 
       return { userId };

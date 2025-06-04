@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
 	users: [],
 	selectedUser: null,
-	modalType: null, // 'edit' | 'signal' | 'fund' | 'profit' | 'loss'
+	modalType: null,  
 };
 
 const usersSlice = createSlice({

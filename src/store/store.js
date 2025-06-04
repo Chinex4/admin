@@ -16,7 +16,7 @@ import activateCopyReducer from '../slices/activateCopySlice';
 import stakingReducer from '../slices/stakingSlice';
 import stakingRequestReducer from '../slices/stakingRequestSlice';
 import authReducer from '../slices/authSlice';
-
+import dataReducer from '../slices/fetchSlice';
 const store = configureStore({
   reducer: {
 	auth: authReducer,
@@ -35,6 +35,7 @@ const store = configureStore({
 	activateCopy: activateCopyReducer,
 	staking: stakingReducer,
 	stakingRequests: stakingRequestReducer,
+	data: dataReducer,
   },
 });
 
