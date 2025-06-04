@@ -1,5 +1,6 @@
 // src/slices/usersSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+import { fetchUsers } from '../redux/thunks/usersThunk';
 
 const initialState = {
 	users: [],
@@ -28,6 +29,21 @@ const usersSlice = createSlice({
 			const idx = state.users.findIndex((u) => u.id === action.payload.id);
 			if (idx !== -1) state.users[idx] = action.payload;
 		},
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(fetchUsers.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchUsers.fulfilled, (state, action) => {
+				state.loading = false;
+				state.users = action.payload;
+			})
+			.addCase(fetchUsers.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload || 'Failed to fetch users';
+			});
 	},
 });
 
