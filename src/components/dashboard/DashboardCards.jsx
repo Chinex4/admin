@@ -40,7 +40,7 @@ const DashboardCards = ({ cardData }) => {
             key={index}
             className={`${cardBg} rounded-xl p-6 text-black shadow-lg flex flex-col justify-between`}
           >
-            <div className='flex justify-end'>{card.icon}</div>
+            <div className='flex justify-center'>{card.icon}</div>
             <div className='mt-8'>
               <p className='text-lg font-semibold'>{card.label}</p>
               <p className='text-2xl font-bold mt-1'>{card.value}</p>

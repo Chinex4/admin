@@ -1,5 +1,5 @@
 import { Popover, Transition } from "@headlessui/react";
-import { EllipsisVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import { Fragment, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -58,24 +58,38 @@ const userFields = [
   "Actions",
 ];
 
+
+const USERS_PER_PAGE = 15;
+
 const UsersTable = () => {
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.users);
   const { fetchedUsers } = useSelector((state) => state.data);
   const [search, setSearch] = useState("");
-  console.log(fetchedUsers);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     dispatch(setUsers(fetchedUsers));
   }, [dispatch, fetchedUsers]);
+
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   const filtered = users.filter((user) =>
     Object.values(user).some((val) =>
       String(val).toLowerCase().includes(search.toLowerCase())
     )
+  );
+
+  const totalPages = Math.ceil(filtered.length / USERS_PER_PAGE);
+  const paginatedUsers = filtered.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
   );
 
   const topLevelKeys = Object.keys(users[0] || {}).filter(
@@ -140,7 +154,7 @@ const UsersTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((user, idx) => (
+            {paginatedUsers.map((user, idx) => (
               <tr
                 key={idx}
                 className='border-b border-gray-800 hover:bg-[#2a2a2a]'
@@ -207,6 +221,29 @@ const UsersTable = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className='flex justify-center gap-3 items-center mt-4 text-white'>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+          className='px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_12px_#a3e635] transition-all duration-300 hover:scale-105'
+        >
+          <ChevronLeft />
+        </button>
+
+        <span className='text-sm'>
+          Page {currentPage} of {totalPages || 1}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          className='px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_12px_#a3e635] transition-all duration-300 hover:scale-105'
+        >
+          <ChevronRight />
+        </button>
       </div>
 
       <ModalsManager />
