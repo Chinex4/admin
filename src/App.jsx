@@ -17,6 +17,7 @@ import SignalPage from './pages/dashboard/SignalPage';
 import ActivateCopyPage from './pages/dashboard/ActivateCopyPage';
 import StakingPage from './pages/dashboard/StakingPage';
 import StakingRequestPage from './pages/dashboard/StakingRequestPage';
+import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 
 function App() {
 	return (
@@ -35,7 +36,11 @@ function App() {
 			{/* Public Route */}
 			<Route
 				path='/login'
-				element={<Login />}
+				element={
+					<RedirectIfAuthenticated>
+						<Login />
+					</RedirectIfAuthenticated>
+				}
 			/>
 
 			{/* Protected Routes */}
