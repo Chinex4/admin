@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fragment } from 'react';
-import { clearModal, updateUser } from '../../slices/userSlice';
+import { clearModal } from '../../slices/userSlice';
 
 const ChangeSignalModal = () => {
 	const { selectedUser } = useSelector((state) => state.users);
@@ -10,8 +10,8 @@ const ChangeSignalModal = () => {
 	const [signalMsg, setSignalMsg] = useState(selectedUser.signalMsg || '');
 
 	const handleSave = () => {
-		dispatch(updateUser({ ...selectedUser, signalMsg }));
-		dispatch(clearModal());
+		// dispatch(updateUser({ ...selectedUser, signalMsg }));
+		// dispatch(clearModal());
 	};
 
 	return (

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearModal, updateUser } from '../../slices/userSlice';
+import { updateUser } from '../../redux/thunks/usersThunk';
+import { clearModal } from '../../slices/userSlice';
 
 const EditUserModal = () => {
 	const dispatch = useDispatch();

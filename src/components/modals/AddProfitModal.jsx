@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fragment } from 'react';
-import { clearModal, updateUser } from '../../slices/userSlice';
+import { clearModal } from '../../slices/userSlice';
 
 const AddProfitModal = () => {
 	const { selectedUser } = useSelector((state) => state.users);
@@ -13,7 +13,7 @@ const AddProfitModal = () => {
 		const updatedProfit = (
 			parseFloat(selectedUser.profit || 0) + parseFloat(profit)
 		).toFixed(2);
-		dispatch(updateUser({ ...selectedUser, profit: updatedProfit }));
+		// dispatch(updateUser({ ...selectedUser, profit: updatedProfit }));
 		dispatch(clearModal());
 	};
 
