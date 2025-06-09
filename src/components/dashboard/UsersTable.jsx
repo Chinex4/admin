@@ -124,7 +124,7 @@ const UsersTable = () => {
 
 	const handleDirectActionClick = async (label, user, action) => {
 		try {
-			await dispatch(action(user.id)).unwrap();
+			await dispatch(action(user.accToken)).unwrap();
 			toast.success(`${label} successful`);
 		} catch (err) {
 			toast.error(err || `${label} failed`);
