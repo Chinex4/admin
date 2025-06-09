@@ -18,9 +18,12 @@ import ActivateCopyPage from './pages/dashboard/ActivateCopyPage';
 import StakingPage from './pages/dashboard/StakingPage';
 import StakingRequestPage from './pages/dashboard/StakingRequestPage';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 	return (
+		<>
+		<Toaster position="top-center" reverseOrder={false} />
 		<Routes>
 			{/* Redirect root to login */}
 			<Route
@@ -122,6 +125,8 @@ function App() {
 				</Route>
 			</Route>
 		</Routes>
+		
+		</>
 	);
 }
 
