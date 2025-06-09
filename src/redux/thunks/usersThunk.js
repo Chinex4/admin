@@ -7,7 +7,7 @@ export const updateUser = createAsyncThunk(
 	'users/updateUser',
 	async (userData, { rejectWithValue }) => {
 		try {
-			const response = await axiosInstance.put(
+			const response = await axiosInstance.patch(
 				`admin/updateUser/${userData.id}`,
 				userData
 			);
@@ -40,7 +40,7 @@ export const disableUserLogin = createAsyncThunk(
 	'users/disableUserLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/disableLogin/${userId}`);
+			const res = await axiosInstance.patch(`admin/disableLogin/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to disable user login');
@@ -53,7 +53,7 @@ export const enableUserLogin = createAsyncThunk(
 	'users/enableUserLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/enableLogin/${userId}`);
+			const res = await axiosInstance.patch(`admin/enableLogin/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to enable user login');
@@ -66,7 +66,7 @@ export const disableAlertMessage = createAsyncThunk(
 	'users/disableAlertMessage',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/disableAlert/${userId}`);
+			const res = await axiosInstance.patch(`admin/disableAlert/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to disable alert message');
@@ -79,7 +79,7 @@ export const enableAlertMessage = createAsyncThunk(
 	'users/enableAlertMessage',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/enableAlert/${userId}`);
+			const res = await axiosInstance.patch(`admin/enableAlert/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to enable alert message');
@@ -92,7 +92,7 @@ export const disableKyc = createAsyncThunk(
 	'users/disableKyc',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/disableKyc/${userId}`);
+			const res = await axiosInstance.patch(`admin/disableKyc/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to disable KYC');
@@ -105,7 +105,7 @@ export const enableKyc = createAsyncThunk(
 	'users/enableKyc',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/enableKyc/${userId}`);
+			const res = await axiosInstance.patch(`admin/enableKyc/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to enable KYC');
@@ -118,7 +118,7 @@ export const resendVerificationEmail = createAsyncThunk(
 	'users/resendVerificationEmail',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(
+			const res = await axiosInstance.patch(
 				`admin/resendVerification/${userId}`
 			);
 			return res.data.message;
@@ -133,7 +133,7 @@ export const disableOtpLogin = createAsyncThunk(
 	'users/disableOtpLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.post(`admin/disableOtp/${userId}`);
+			const res = await axiosInstance.patch(`admin/disableOtp/${userId}`);
 			return res.data.updatedUser;
 		} catch (err) {
 			return rejectWithValue('Failed to disable OTP login');
