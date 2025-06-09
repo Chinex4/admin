@@ -4,7 +4,7 @@ import axiosInstance from '../../utils/axiosInstance';
 
 // ✅ 1. Update user
 export const updateUser = createAsyncThunk(
-	'users/updateUser',
+	'admin/updateUser',
 	async (userData, { rejectWithValue }) => {
 		try {
 			const response = await axiosInstance.patch(
@@ -22,7 +22,7 @@ export const updateUser = createAsyncThunk(
 
 // ✅ 2. Delete User
 export const deleteUser = createAsyncThunk(
-	'users/deleteUser',
+	'admin/deleteUser',
 	async (userId, { rejectWithValue }) => {
 		try {
 			await axiosInstance.delete(`admin/deleteUser/${userId}`);
@@ -37,7 +37,7 @@ export const deleteUser = createAsyncThunk(
 
 // ✅ 3. Disable User Login
 export const disableUserLogin = createAsyncThunk(
-	'users/disableUserLogin',
+	'admin/disableUserLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/disableLogin/${userId}`);
@@ -50,7 +50,7 @@ export const disableUserLogin = createAsyncThunk(
 
 // ✅ 4. Enable User Login
 export const enableUserLogin = createAsyncThunk(
-	'users/enableUserLogin',
+	'admin/enableUserLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/enableLogin/${userId}`);
@@ -63,7 +63,7 @@ export const enableUserLogin = createAsyncThunk(
 
 // ✅ 5. Disable Alert Message
 export const disableAlertMessage = createAsyncThunk(
-	'users/disableAlertMessage',
+	'admin/disableAlertMessage',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/disableAlert/${userId}`);
@@ -76,7 +76,7 @@ export const disableAlertMessage = createAsyncThunk(
 
 // ✅ 6. Enable Alert Message
 export const enableAlertMessage = createAsyncThunk(
-	'users/enableAlertMessage',
+	'admin/enableAlertMessage',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/enableAlert/${userId}`);
@@ -89,7 +89,7 @@ export const enableAlertMessage = createAsyncThunk(
 
 // ✅ 7. Disable KYC
 export const disableKyc = createAsyncThunk(
-	'users/disableKyc',
+	'admin/disableKyc',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/disableKyc/${userId}`);
@@ -102,7 +102,7 @@ export const disableKyc = createAsyncThunk(
 
 // ✅ 8. Enable KYC
 export const enableKyc = createAsyncThunk(
-	'users/enableKyc',
+	'admin/enableKyc',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/enableKyc/${userId}`);
@@ -115,7 +115,7 @@ export const enableKyc = createAsyncThunk(
 
 // ✅ 9. Resend Verification Email
 export const resendVerificationEmail = createAsyncThunk(
-	'users/resendVerificationEmail',
+	'admin/resendVerificationEmail',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(
@@ -130,7 +130,7 @@ export const resendVerificationEmail = createAsyncThunk(
 
 // ✅ 10. Disable OTP Login
 export const disableOtpLogin = createAsyncThunk(
-	'users/disableOtpLogin',
+	'admin/disableOtpLogin',
 	async (userId, { rejectWithValue }) => {
 		try {
 			const res = await axiosInstance.patch(`admin/disableOtp/${userId}`);
