@@ -118,8 +118,8 @@ export const resendVerificationEmail = createAsyncThunk(
 	'admin/resendVerificationEmail',
 	async (userId, { rejectWithValue }) => {
 		try {
-			const res = await axiosInstance.patch(
-				`admin/resendVerification/${userId}`
+			const res = await axiosInstance.post(
+				`admin/resendVerification`,{userId}
 			);
 			return res;
 		} catch (err) {
