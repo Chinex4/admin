@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setWallets, deleteWallet } from "../../slices/walletSlice";
+import { setWallets } from "../../slices/walletSlice";
+import { deleteWallet } from "../../redux/thunks/walletsThunk";
 import axiosInstance from "../../utils/axiosInstance";
 import {
   ChevronUp,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { Dialog, Transition, Menu } from "@headlessui/react";
 import { updateWallet } from "../../redux/thunks/walletsThunk";
-import { showSuccess } from "../../utils/toast";
+import { showPromise, showSuccess } from "../../utils/toast";
 
 const WalletsTable = () => {
   const dispatch = useDispatch();
@@ -113,6 +114,21 @@ const WalletsTable = () => {
       console.error("Update failed:", error);
     }
   };
+
+  const handleDelete = async (walletId) => {
+  await showPromise(
+    dispatch(deleteWallet(walletId)).unwrap(),
+    {
+      loading: 'Deleting wallet...',
+      success: 'Wallet deleted successfully!',
+      error: (err) =>
+        typeof err === 'string'
+          ? err
+          : 'Failed to delete wallet. Please try again.',
+    }
+  );
+};
+
 
   return (
     <div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
@@ -216,7 +232,7 @@ const WalletsTable = () => {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => dispatch(deleteWallet(wallet.id))}
+                    onClick={() => handleDelete(wallet.id)}
                     className={`${
                       active ? "bg-red-600 text-white" : "text-red-400"
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { updateWallet } from "../redux/thunks/walletsThunk"; // 👈 import your thunk
+import { updateWallet, deleteWallet } from "../redux/thunks/walletsThunk"; // 👈 import your thunk
 
 const initialState = {
   wallets: [],
@@ -24,9 +24,9 @@ const walletSlice = createSlice({
       state.walletModalType = null;
       state.selectedWallet = null;
     },
-    deleteWallet: (state, action) => {
-      state.wallets = state.wallets.filter(w => w.id !== action.payload);
-    },
+    // deleteWallet: (state, action) => {
+    //   state.wallets = state.wallets.filter(w => w.id !== action.payload);
+    // },
   },
   extraReducers: (builder) => {
     builder.addCase(updateWallet.fulfilled, (state, action) => {
@@ -34,6 +34,9 @@ const walletSlice = createSlice({
       if (index !== -1) {
         state.wallets[index] = action.payload;
       }
+    })
+    .addCase(deleteWallet.fulfilled, (state, action) => {
+      state.wallets = state.wallets.filter(wallet => wallet.id !== action.payload);
     });
   },
 });
@@ -43,7 +46,7 @@ export const {
   setSelectedWallet,
   setWalletModalType,
   clearWalletModal,
-  deleteWallet,
+  // deleteWallet,
 } = walletSlice.actions;
 
 export default walletSlice.reducer;
