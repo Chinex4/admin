@@ -190,6 +190,8 @@ const WalletsTable = () => {
             parsedItems = JSON.parse(rawValue);
           } catch (e) {
             parsedItems = [];
+            console.log(e);
+            
           }
         }
 
