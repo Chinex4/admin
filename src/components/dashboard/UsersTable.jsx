@@ -26,11 +26,11 @@ import { showPromise } from "../../utils/toast";
 const userFields = [
   "#",
   "Name",
+  "Username",
   "Email",
   "Password",
   "Referral",
   "Created At",
-  "Username",
   "Language",
   "Basic Verification",
   "Advanced Verification",
@@ -96,9 +96,10 @@ const UsersTable = () => {
     setCurrentPage(1);
   }, [search]);
 
-  const topLevelKeys = Object.keys(users[0] || {}).filter(
-    (k) => k !== "crypto" && k !== "id"
-  );
+ const topLevelKeys = Object.keys(users[0] || {}).filter(
+  (k) => !["crypto", "id", "allowOtp"].includes(k)
+);
+
   const cryptoKeys = Object.keys(users[0]?.crypto || {});
 
   const handleModal = (user, type) => {
