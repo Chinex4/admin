@@ -5,6 +5,7 @@ import ChangeSignalModal from './ChangeSignalModal';
 import FundUserModal from './FundUserModal';
 import AddProfitModal from './AddProfitModal';
 import AddLossModal from './AddLossModal';
+import EditWalletModal from './EditWalletModal';
 
 const ModalsManager = () => {
 	const { modalType } = useSelector((state) => state.users);
@@ -16,6 +17,7 @@ const ModalsManager = () => {
 			{modalType === 'fund' && <FundUserModal />}
 			{modalType === 'profit' && <AddProfitModal />}
 			{modalType === 'loss' && <AddLossModal />}
+			{modalType === 'editWallet' && <EditWalletModal />}
 		</>
 	);
 };

@@ -1,22 +1,49 @@
-// src/slices/walletSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import { updateWallet } from "../redux/thunks/walletsThunk"; // 👈 import your thunk
 
 const initialState = {
-	wallets: [],
+  wallets: [],
+  selectedWallet: null,
+  walletModalType: null,
 };
 
 const walletSlice = createSlice({
-	name: 'wallets',
-	initialState,
-	reducers: {
-		setWallets: (state, action) => {
-			state.wallets = action.payload;
-		},
-		deleteWallet: (state, action) => {
-			state.wallets = state.wallets.filter((w) => w.id !== action.payload);
-		},
-	},
+  name: "wallets",
+  initialState,
+  reducers: {
+    setWallets: (state, action) => {
+      state.wallets = action.payload;
+    },
+    setSelectedWallet: (state, action) => {
+      state.selectedWallet = action.payload;
+    },
+    setWalletModalType: (state, action) => {
+      state.walletModalType = action.payload;
+    },
+    clearWalletModal: (state) => {
+      state.walletModalType = null;
+      state.selectedWallet = null;
+    },
+    deleteWallet: (state, action) => {
+      state.wallets = state.wallets.filter(w => w.id !== action.payload);
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateWallet.fulfilled, (state, action) => {
+      const index = state.wallets.findIndex((w) => w.id === action.payload.id);
+      if (index !== -1) {
+        state.wallets[index] = action.payload;
+      }
+    });
+  },
 });
 
-export const { setWallets, deleteWallet } = walletSlice.actions;
+export const {
+  setWallets,
+  setSelectedWallet,
+  setWalletModalType,
+  clearWalletModal,
+  deleteWallet,
+} = walletSlice.actions;
+
 export default walletSlice.reducer;

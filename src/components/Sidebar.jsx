@@ -1,231 +1,287 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import {
-	ChevronDown,
-	Menu,
-	Users,
-	Monitor,
-	Wallet,
-	Bell,
-	PieChart,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import clsx from 'clsx';
+  ChevronDown,
+  Menu,
+  Users,
+  Monitor,
+  Wallet,
+  Bell,
+  PieChart,
+  X,
+} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import clsx from "clsx";
 
-const SidebarItem = ({ icon: Icon, label, children, isCollapsed }) => {
-	const [open, setOpen] = useState(false);
+// SidebarItem Component
+const SidebarItem = ({
+  icon: Icon,
+  label,
+  children,
+  isCollapsed,
+  routes = [],
+  isMobile,
+  setIsMobileOpen,
+}) => {
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
 
-	return (
-		<div>
-			<button
-				onClick={() => setOpen(!open)}
-				className={clsx(
-					'flex items-center justify-between w-full px-4 py-3 text-white hover:bg-[#1f1f1f]',
-					isCollapsed && 'justify-center px-2'
-				)}>
-				<div className='flex items-center gap-3'>
-					<Icon size={18} />
-					{!isCollapsed && <span>{label}</span>}
-				</div>
-				{!isCollapsed && (
-					<ChevronDown
-						size={18}
-						className={`${open ? 'rotate-180' : ''} transition-transform`}
-					/>
-				)}
-			</button>
+  useEffect(() => {
+    const isActive = routes.some((route) =>
+      location.pathname.startsWith(route)
+    );
+    setOpen(isActive);
+  }, [location.pathname, routes]);
 
-			{!isCollapsed && open && (
-				<div className='pl-10 py-2 space-y-2 text-sm text-gray-300'>
-					{children}
-				</div>
-			)}
-		</div>
-	);
+  const handleClick = () => {
+    setOpen((prev) => !prev);
+  };
+
+  return (
+    <div>
+      <button
+        onClick={handleClick}
+        className={clsx(
+          "flex items-center justify-between w-full px-4 py-3 text-white hover:bg-[#1f1f1f]",
+          isCollapsed && "justify-center px-2"
+        )}
+      >
+        <div className='flex items-center gap-3'>
+          <Icon size={18} />
+          {!isCollapsed && <span>{label}</span>}
+        </div>
+        {!isCollapsed && (
+          <ChevronDown
+            size={18}
+            className={`${open ? "rotate-180" : ""} transition-transform`}
+          />
+        )}
+      </button>
+
+      {!isCollapsed && open && (
+        <div className='pl-10 py-2 space-y-2 text-sm text-gray-300'>
+          {children.map(({ to, text }, i) => (
+            <NavLink
+              key={i}
+              to={to}
+              onClick={() => isMobile && setIsMobileOpen(false)}
+              className={({ isActive }) =>
+                clsx(
+                  "block",
+                  isActive ? "text-lime-400 font-medium" : "hover:text-lime-400"
+                )
+              }
+            >
+              {text}
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
-import { X } from 'lucide-react'; // already using Menu, import X too
-
+// Sidebar Component
 const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
-	return (
-		<aside
-			className={clsx(
-				'h-screen overflow-y-auto scrollbar-hide bg-[#111111] border-r border-gray-800 transition-all duration-300 z-50',
-				isCollapsed ? 'w-16' : 'w-72',
-				isMobileOpen ? 'block fixed top-0 left-0' : 'hidden',
-				'md:block md:static'
-			)}>
-			{/* Mobile close button */}
-			<div className='flex justify-between items-center px-4 py-3 md:hidden border-b border-gray-800'>
-				<span className='text-lime-400 text-xl font-bold'>Admin Panel</span>
-				<button
-					onClick={() => setIsMobileOpen(false)}
-					className='text-white'>
-					<X size={20} />
-				</button>
-			</div>
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
-			{/* Desktop title */}
-			<div
-				className={clsx(
-					'p-4 font-bold text-xl text-lime-400 border-b border-gray-800 hidden md:block',
-					isCollapsed && 'text-center'
-				)}>
-				{!isCollapsed ? 'Admin Panel' : 'A'}
-			</div>
+  return (
+    <aside
+      className={clsx(
+        "h-screen overflow-y-auto scrollbar-hide bg-[#111111] border-r border-gray-800 transition-all duration-300 z-50",
+        isCollapsed ? "w-16" : "w-72",
+        isMobileOpen ? "block fixed top-0 left-0" : "hidden",
+        "md:block md:static"
+      )}
+    >
+      {/* Mobile Header */}
+      <div className='flex justify-between items-center px-4 py-3 md:hidden border-b border-gray-800'>
+        <span className='text-lime-400 text-xl font-bold'>Admin Panel</span>
+        <button onClick={() => setIsMobileOpen(false)} className='text-white'>
+          <X size={20} />
+        </button>
+      </div>
 
-			<nav className='mt-4 space-y-1'>
-				<SidebarItem
-					icon={Users}
-					label='Users Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/users'
-						className='block hover:text-lime-400'>
-						Everything About the User
-					</Link>
-					{/* <Link
-						to='/dashboard/users/kyc'
-						className='block hover:text-lime-400'>
-						KYC Info
-					</Link> */}
-				</SidebarItem>
+      {/* Desktop Header */}
+      <div
+        className={clsx(
+          "p-4 font-bold text-xl text-lime-400 border-b border-gray-800 hidden md:block",
+          isCollapsed && "text-center"
+        )}
+      >
+        {!isCollapsed ? "Admin Panel" : "A"}
+      </div>
 
-				<SidebarItem
-					icon={Monitor}
-					label='Transaction Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewDeposits'
-						className='block hover:text-lime-400'>
-						About Deposit
-					</Link>
-					<Link
-						to='/dashboard/viewWithdrawal'
-						className='block hover:text-lime-400'>
-						About Crypto Withdrawal
-					</Link>
-					<Link
-						to='/dashboard/viewProfits'
-						className='block hover:text-lime-400'>
-						About Profit
-					</Link>
-					<Link
-						to='/dashboard/viewLosses'
-						className='block hover:text-lime-400'>
-						About Loss
-					</Link>
-				</SidebarItem>
+      {/* Menu */}
+      <nav className='mt-4 space-y-1'>
+        <SidebarItem
+          icon={Users}
+          label='Users Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/users"]}
+          children={[
+            { to: "/dashboard/users", text: "Everything About the User" },
+          ]}
+        />
 
-				<SidebarItem
-					icon={PieChart}
-					label='Trade Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewTrades'
-						className='block hover:text-lime-400'>
-						About Trade
-					</Link>
-				</SidebarItem>
+        <SidebarItem
+          icon={Monitor}
+          label='Transaction Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={[
+            "/dashboard/viewDeposits",
+            "/dashboard/viewWithdrawal",
+            "/dashboard/viewProfits",
+            "/dashboard/viewLosses",
+          ]}
+          children={[
+            { to: "/dashboard/viewDeposits", text: "About Deposit" },
+            {
+              to: "/dashboard/viewWithdrawal",
+              text: "About Crypto Withdrawal",
+            },
+            { to: "/dashboard/viewProfits", text: "About Profit" },
+            { to: "/dashboard/viewLosses", text: "About Loss" },
+          ]}
+        />
 
-				<SidebarItem
-					icon={Wallet}
-					label='Wallet Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewBrokersWallet'
-						className='block hover:text-lime-400'>
-						About Broker's Wallet
-					</Link>
-				</SidebarItem>
+        <SidebarItem
+          icon={PieChart}
+          label='Trade Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewTrades"]}
+          children={[{ to: "/dashboard/viewTrades", text: "About Trade" }]}
+        />
 
-				<SidebarItem
-					icon={Bell}
-					label='KYC/Proof of payment'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewProofs'
-						className='block hover:text-lime-400'>
-						About proof of payment
-					</Link>
-					<Link
-						to='/dashboard/viewKyc'
-						className='block hover:text-lime-400'>
-						About Kyc
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Copy Traders Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewCopyTraders'
-						className='block hover:text-lime-400'>
-						About Copy Trader
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Subscribed User Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewCopiedTraders'
-						className='block hover:text-lime-400'>
-						View All Copy Trader
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Signal Table'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewSignalTraders'
-						className='block hover:text-lime-400'>
-						About SIgnal Traders
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Activate Copy Trade'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/activateCopy'
-						className='block hover:text-lime-400'>
-						About Activate Copy Traders
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='About Staking'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewAllStaking'
-						className='block hover:text-lime-400'>
-						View all Staking
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Stake Request'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewAllStakeRequest'
-						className='block hover:text-lime-400'>
-						View all Stake Request
-					</Link>
-				</SidebarItem>
-				<SidebarItem
-					icon={Bell}
-					label='Login'
-					isCollapsed={isCollapsed}>
-					<Link
-						to='/dashboard/viewAllStakeRequest'
-						className='block hover:text-lime-400'>
-						Login
-					</Link>
-				</SidebarItem>
-			</nav>
-		</aside>
-	);
+        <SidebarItem
+          icon={Wallet}
+          label='Wallet Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewBrokersWallet"]}
+          children={[
+            {
+              to: "/dashboard/viewBrokersWallet",
+              text: "About Broker's Wallet",
+            },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='KYC/Proof of payment'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewProofs", "/dashboard/viewKyc"]}
+          children={[
+            { to: "/dashboard/viewProofs", text: "About proof of payment" },
+            { to: "/dashboard/viewKyc", text: "About Kyc" },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Copy Traders Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewCopyTraders"]}
+          children={[
+            { to: "/dashboard/viewCopyTraders", text: "About Copy Trader" },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Subscribed User Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewCopiedTraders"]}
+          children={[
+            {
+              to: "/dashboard/viewCopiedTraders",
+              text: "View All Copy Trader",
+            },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Signal Table'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewSignalTraders"]}
+          children={[
+            {
+              to: "/dashboard/viewSignalTraders",
+              text: "About SIgnal Traders",
+            },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Activate Copy Trade'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/activateCopy"]}
+          children={[
+            {
+              to: "/dashboard/activateCopy",
+              text: "About Activate Copy Traders",
+            },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='About Staking'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewAllStaking"]}
+          children={[
+            { to: "/dashboard/viewAllStaking", text: "View all Staking" },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Stake Request'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewAllStakeRequest"]}
+          children={[
+            {
+              to: "/dashboard/viewAllStakeRequest",
+              text: "View all Stake Request",
+            },
+          ]}
+        />
+
+        <SidebarItem
+          icon={Bell}
+          label='Login'
+          isCollapsed={isCollapsed}
+          isMobile={isMobile}
+          setIsMobileOpen={setIsMobileOpen}
+          routes={["/dashboard/viewAllStakeRequest"]}
+          children={[{ to: "/dashboard/viewAllStakeRequest", text: "Login" }]}
+        />
+      </nav>
+    </aside>
+  );
 };
 
 export default Sidebar;
