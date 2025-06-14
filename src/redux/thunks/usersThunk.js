@@ -140,3 +140,14 @@ export const disableOtpLogin = createAsyncThunk(
 		}
 	}
 );
+export const enableOtpLogin = createAsyncThunk(
+	'admin/enableOtpLogin',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/enableOtp/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue( err ||'Failed to enable OTP login');
+		}
+	}
+);

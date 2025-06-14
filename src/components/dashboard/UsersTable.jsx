@@ -19,6 +19,7 @@ import {
   enableKyc,
   resendVerificationEmail,
   disableOtpLogin,
+  enableOtpLogin,
 } from "../../redux/thunks/usersThunk";
 import { showPromise } from "../../utils/toast";
  
@@ -122,6 +123,7 @@ const UsersTable = () => {
     { label: "Disable Kyc", action: disableKyc },
     { label: "Enable Kyc", action: enableKyc },
     { label: "Resend Verification Email", action: resendVerificationEmail },
+    { label: "Enable OTP Login", action: enableOtpLogin },
     { label: "Disable OTP Login", action: disableOtpLogin },
   ];
 
