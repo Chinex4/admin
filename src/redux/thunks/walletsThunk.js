@@ -2,6 +2,19 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../utils/axiosInstance';
 
 // Update Wallet Thunk
+export const addWallet = createAsyncThunk(
+  'wallets/addWallet',
+  async (walletData, { rejectWithValue }) => {
+    try {
+      const { id, ...body } = walletData;  
+      const res = await axiosInstance.post(`admin/addWallet/${id}`, body);
+      return res.data.message;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Unknown error');
+    }
+  }
+);
+// Update Wallet Thunk
 export const updateWallet = createAsyncThunk(
   'wallets/updateWallet',
   async (walletData, { rejectWithValue }) => {

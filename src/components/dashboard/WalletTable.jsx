@@ -13,6 +13,8 @@ import {
 import { Dialog, Transition, Menu } from "@headlessui/react";
 import { updateWallet } from "../../redux/thunks/walletsThunk";
 import { showPromise, showSuccess } from "../../utils/toast";
+import AddWalletModal from '../modals/AddWalletModal';
+
 
 const WalletsTable = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,8 @@ const WalletsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const itemsPerPage = 20;
+  const [showAddModal, setShowAddModal] = useState(false);
+
 
   const columnKeys = [
     "coin_id",
@@ -129,12 +133,18 @@ const WalletsTable = () => {
   );
 };
 
+      
+
+
+
 
   return (
     <div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
       <div className="flex justify-between items-center mb-4">
       <h2 className='text-xl font-semibold text-white mb-4'>User Wallets</h2>
-        <button className='bg-black px-6 py-2 rounded-lg hover:bg-black/80 transition-all duration-300'>
+        <button 
+        onClick={() => setShowAddModal(true)}
+        className='bg-black px-6 py-2 rounded-lg hover:bg-black/80 transition-all duration-300'>
           Add Coin
         </button>
       </div>
@@ -486,6 +496,7 @@ const WalletsTable = () => {
           </div>
         </Dialog>
       </Transition>
+      <AddWalletModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} />
     </div>
   );
 };
