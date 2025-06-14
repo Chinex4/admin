@@ -132,7 +132,12 @@ const WalletsTable = () => {
 
   return (
     <div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
+      <div className="flex justify-between items-center mb-4">
       <h2 className='text-xl font-semibold text-white mb-4'>User Wallets</h2>
+        <button className='bg-black px-6 py-2 rounded-lg hover:bg-black/80 transition-all duration-300'>
+          Add Coin
+        </button>
+      </div>
       <input
         type='text'
         placeholder='Search wallets...'
