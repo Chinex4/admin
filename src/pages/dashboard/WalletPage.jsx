@@ -16,7 +16,7 @@ const WalletPage = () => {
   ];
   return (
     <div>
-        <DashboardCards cardData={walletsData} />
+        <DashboardCards cardData={walletsData} centerSingleCard/>
         <WalletsTable />
     </div>
   )

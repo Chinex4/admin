@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PauseCircle } from "lucide-react";
 
-const DashboardCards = ({ cardData }) => {
+const DashboardCards = ({ cardData, centerSingleCard = false }) => {
   const gradientClasses = [
     "bg-gradient-to-r from-lime-400 to-green-500",
     "bg-gradient-to-r from-blue-500 to-indigo-600",
@@ -44,6 +44,8 @@ const DashboardCards = ({ cardData }) => {
     );
   }
 
+  const isSingle = cardData.length === 1 && centerSingleCard;
+
   return (
     <section className='px-4 py-6 space-y-4'>
       <div className='flex justify-end'>
@@ -58,11 +60,17 @@ const DashboardCards = ({ cardData }) => {
         )}
       </div>
 
-      <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+      <div
+        className={`grid gap-6 ${
+          isSingle
+            ? 'grid-cols-1 justify-center place-items-center'
+            : 'grid-cols-1 md:grid-cols-3'
+        }`}
+      >
         {cardData.map((card, index) => (
           <div
             key={index}
-            className={`${cardBg} rounded-xl p-6 text-white shadow-lg flex flex-col justify-between`}
+            className={`${cardBg} rounded-xl p-6 text-white shadow-lg flex flex-col justify-between w-full max-w-sm`}
           >
             <div className='flex justify-left'>{card.icon}</div>
             <div className='mt-8'>
