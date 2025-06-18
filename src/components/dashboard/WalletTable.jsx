@@ -410,8 +410,6 @@ const WalletsTable = () => {
                     {/* Networks */}
                     <h3 className='text-md font-semibold'>Networks</h3>
                     {(selectedWallet?.network || []).map((net, index) => {
-                      console.log(selectedWallet?.network);
-
                       return (
                         <div
                           key={index}

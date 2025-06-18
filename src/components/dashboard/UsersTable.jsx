@@ -22,7 +22,7 @@ import {
   enableOtpLogin,
 } from "../../redux/thunks/usersThunk";
 import { showPromise } from "../../utils/toast";
- 
+
 const userFields = [
   "#",
   "Name",
@@ -82,7 +82,6 @@ const UsersTable = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
 
-
   useEffect(() => {
     dispatch(setUsers(fetchedUsers));
   }, [dispatch, fetchedUsers]);
@@ -96,9 +95,9 @@ const UsersTable = () => {
     setCurrentPage(1);
   }, [search]);
 
- const topLevelKeys = Object.keys(users[0] || {}).filter(
-  (k) => !["crypto", "id", "allowOtp"].includes(k)
-);
+  const topLevelKeys = Object.keys(users[0] || {}).filter(
+    (k) => !["crypto", "id", "allowOtp"].includes(k)
+  );
 
   const cryptoKeys = Object.keys(users[0]?.crypto || {});
 
@@ -286,33 +285,42 @@ const UsersTable = () => {
                         static
                         className='fixed top-[50%] left-[43%] lg:left-[83%] transform -translate-x-1/2 -translate-y-1/2 z-50 bg-[#111] text-white shadow-lg border border-gray-700 rounded-md p-2 w-64 space-y-1'
                       >
-                        <p className='text-gray-400 text-xs mb-1'>
-                          Open Modals
-                        </p>
-                        {modalActions.map(({ label, type }) => (
-                          <button
-                            key={type}
-                            onClick={() => handleModal(user, type)}
-                            className='w-full text-left px-2 py-1 hover:bg-[#222] rounded'
-                          >
-                            {label}
-                          </button>
-                        ))}
-                        <hr className='border-gray-700 my-2' />
-                        <p className='text-gray-400 text-xs mb-1'>
-                          Direct Actions
-                        </p>
-                        {directActions.map(({ label, action }, i) => (
-                          <button
-                            key={i}
-                            onClick={() =>
-                              handleDirectActionClick(label, user, action)
-                            }
-                            className='w-full text-left px-2 py-1 hover:bg-[#222] rounded'
-                          >
-                            {label}
-                          </button>
-                        ))}
+                        {({ close }) => (
+                          <>
+                            <p className='text-gray-400 text-xs mb-1'>
+                              Open Modals
+                            </p>
+                            {modalActions.map(({ label, type }) => (
+                              <button
+                                key={type}
+                                onClick={() => {
+                                  handleModal(user, type);
+                                  close();
+                                }}
+                                className='w-full text-left px-2 py-1 hover:bg-[#222] rounded'
+                              >
+                                {label}
+                              </button>
+                            ))}
+
+                            <hr className='border-gray-700 my-2' />
+                            <p className='text-gray-400 text-xs mb-1'>
+                              Direct Actions
+                            </p>
+                            {directActions.map(({ label, action }, i) => (
+                              <button
+                                key={i}
+                                onClick={() => {
+                                  handleDirectActionClick(label, user, action);
+                                  close();
+                                }}
+                                className='w-full text-left px-2 py-1 hover:bg-[#222] rounded'
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </>
+                        )}
                       </Popover.Panel>
                     </Transition>
                   </Popover>
