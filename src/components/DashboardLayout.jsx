@@ -13,7 +13,6 @@ const DashboardLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log(isMobileOpen)
 
   useEffect(() => {
     const handleClickOutside = (event) => {

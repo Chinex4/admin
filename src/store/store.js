@@ -17,25 +17,27 @@ import stakingReducer from '../slices/stakingSlice';
 import stakingRequestReducer from '../slices/stakingRequestSlice';
 import authReducer from '../slices/authSlice';
 import dataReducer from '../slices/fetchSlice';
+import institutionReducer from '../slices/institutionSlice';
 const store = configureStore({
   reducer: {
-	auth: authReducer,
+    auth: authReducer,
     users: usersReducer,
     deposits: depositReducer,
     withdrawals: withdrawReducer,
     profits: profitReducer,
-    losses: lossReducer, 
-	trades: tradeReducer,
-	wallets: walletReducer,
-	proofs: proofReducer,
-	kyc: kycReducer,
-	copyTraders: copyTraderReducer,
-	copiedTraders: copiedTraderReducer,
-	signals: signalReducer,
-	activateCopy: activateCopyReducer,
-	staking: stakingReducer,
-	stakingRequests: stakingRequestReducer,
-	data: dataReducer,
+    losses: lossReducer,
+    trades: tradeReducer,
+    wallets: walletReducer,
+    proofs: proofReducer,
+    kyc: kycReducer,
+    institution: institutionReducer,
+    copyTraders: copyTraderReducer,
+    copiedTraders: copiedTraderReducer,
+    signals: signalReducer,
+    activateCopy: activateCopyReducer,
+    staking: stakingReducer,
+    stakingRequests: stakingRequestReducer,
+    data: dataReducer,
   },
 });
 

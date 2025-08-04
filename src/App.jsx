@@ -20,6 +20,7 @@ import StakingRequestPage from './pages/dashboard/StakingRequestPage';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import { Toaster } from 'react-hot-toast';
 import AdvancedKYCPage from './pages/dashboard/AdvancedKYCPage';
+import InstitutionalVerificationPage from './pages/dashboard/InstitutionalVerificationPage';
 
 function App() {
 	return (
@@ -105,7 +106,7 @@ function App() {
 					/>
 					<Route
 						path='viewInstitutionalVerification'
-						element={<KYCPage />}
+						element={<InstitutionalVerificationPage />}
 					/>
 					<Route
 						path='viewCopyTraders'
