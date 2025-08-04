@@ -52,13 +52,20 @@ const items = [
 	},
 	{
 		icon: Bell,
-		label: 'KYC/Proof of payment',
+		label: 'Identity Verification (KYC)',
 		routes: ['/dashboard/viewProofs', '/dashboard/viewKyc'],
 		children: [
-			{ to: '/dashboard/viewProofs', text: 'About proof of payment' },
 			{ to: '/dashboard/viewKyc', text: 'About Kyc' },
 			{ to: '/dashboard/viewAdvancedKyc', text: 'About Advanced Kyc' },
 			{ to: '/dashboard/viewInstitutionalVerification', text: 'About Institutional Verification' },
+		],
+	},
+	{
+		icon: Bell,
+		label: 'Proof of Payment',
+		routes: ['/dashboard/viewProofs'],
+		children: [
+			{ to: '/dashboard/viewProofs', text: 'About proof of payment' },
 		],
 	},
 	{

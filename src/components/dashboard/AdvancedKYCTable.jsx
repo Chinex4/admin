@@ -10,34 +10,17 @@ import {
   fetchAdvancedKycs,
 } from '../../slices/kycSlice';
 
-const dummyAdvancedKycs = [
-  {
-    id: 1,
-    proofOfAddress:
-      'http://192.168.1.238/cashtradeproApi/image/a93597b92fa9c8b81e93eaeb68c6401f.png',
-    createdAt: '8/3/2025, 12:46:44 PM',
-    userId: '52800f19ff6d48487da706e2374391e0',
-    kycId: '030472541',
-    status: 'Pending',
-    updatedAt: null,
-    ipAddress: '192.168.1.238',
-    reviewedAt: null,
-    rejectionReason: null,
-    attempts: 0,
-  },
-];
+
 
 const AdvancedKycTable = () => {
   const dispatch = useDispatch();
   const advancedKycs = useSelector((state) => state.kyc.advancedKycs);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    dispatch(setAdvancedKycs(dummyAdvancedKycs));
-  }, [dispatch]);
-  //   useEffect(() => {
-  //     dispatch(fetchAdvancedKycs()); // for AdvancedKycTable
-  //   }, [dispatch]);
+
+    useEffect(() => {
+      dispatch(fetchAdvancedKycs()); // for AdvancedKycTable
+    }, [dispatch]);
 
   const filtered = advancedKycs.filter((kyc) =>
     Object.values(kyc).some((val) =>

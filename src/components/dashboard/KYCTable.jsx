@@ -7,36 +7,18 @@ import {
   approveKycAsync,
   disapproveKycAsync,
   deleteKycAsync,
+  fetchBasicKycs
 } from '../../slices/kycSlice';
 
-const dummyKycs = [
-  {
-    id: 1,
-    kycId: '916957265',
-    userId: '46a5ad400018e84a66adefac8273608d',
-    country: 'Algeria',
-    documentType: 'ID Card',
-    idNumber: '10872946072',
-    firstName: 'Philip',
-    lastName: 'Henry',
-    dateOfBirth: '2007-07-31',
-    createdAt: '2025-07-31 08:00:00',
-    frontImage:
-      'http://192.168.1.238/cashtradeproApi/image/edef6c289243bfc20bc8933071162e62.png',
-    backImage:
-      'http://192.168.1.238/cashtradeproApi/image/b3f50f27b000e5c0e9337715b8be9742.png',
-    status: 'Pending',
-    approveDate: null,
-  },
-];
 
 const KycTable = () => {
   const dispatch = useDispatch();
   const basicKycs = useSelector((state) => state.kyc.basicKycs); // ✅ FIXED
   const [search, setSearch] = useState('');
 
+
   useEffect(() => {
-    dispatch(setKycs(dummyKycs));
+    dispatch(fetchBasicKycs());
   }, [dispatch]);
 
   const filtered = basicKycs.filter((kyc) =>

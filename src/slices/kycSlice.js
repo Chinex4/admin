@@ -7,7 +7,7 @@ import { showPromise } from '../utils/toast';
 // BASIC
 export const fetchBasicKycs = createAsyncThunk('kyc/fetchBasic', async () => {
   const res = await axiosInstance.get('/admin/getBasicKycs');
-  return res.data.kycs;
+  return res.data.message;
 });
 
 // ADVANCED
@@ -15,7 +15,7 @@ export const fetchAdvancedKycs = createAsyncThunk(
   'kyc/fetchAdvanced',
   async () => {
     const res = await axiosInstance.get('/admin/getAdvancedKycs');
-    return res.data.kycs;
+    return res.data.message;
   },
 );
 
