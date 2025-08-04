@@ -63,6 +63,9 @@ const kycSlice = createSlice({
     setKycs: (state, action) => {
       state.basicKycs = action.payload;
     },
+    setAdvancedKycs: (state, action) => {
+      state.advancedKycs = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -112,5 +115,5 @@ const kycSlice = createSlice({
   },
 });
 
-export const { setKycs } = kycSlice.actions;
+export const { setKycs, setAdvancedKycs } = kycSlice.actions;
 export default kycSlice.reducer;

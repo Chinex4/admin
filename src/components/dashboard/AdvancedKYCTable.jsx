@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setKycs } from '../../slices/kycSlice';
+import { setAdvancedKycs } from '../../slices/kycSlice';
 import { Popover, Transition } from '@headlessui/react';
 import { EllipsisVertical } from 'lucide-react';
 import {
@@ -29,18 +29,17 @@ const dummyAdvancedKycs = [
 
 const AdvancedKycTable = () => {
   const dispatch = useDispatch();
-  const { kycs } = useSelector((state) => state.kyc.advancedKycs);
+  const advancedKycs = useSelector((state) => state.kyc.advancedKycs);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    dispatch(setKycs(dummyAdvancedKycs));
+    dispatch(setAdvancedKycs(dummyAdvancedKycs));
   }, [dispatch]);
-//   useEffect(() => {
-//     dispatch(fetchAdvancedKycs()); // for AdvancedKycTable
-//   }, [dispatch]);
+  //   useEffect(() => {
+  //     dispatch(fetchAdvancedKycs()); // for AdvancedKycTable
+  //   }, [dispatch]);
 
-
-  const filtered = kycs.filter((kyc) =>
+  const filtered = advancedKycs.filter((kyc) =>
     Object.values(kyc).some((val) =>
       String(val).toLowerCase().includes(search.toLowerCase()),
     ),
