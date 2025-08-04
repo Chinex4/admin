@@ -33,7 +33,8 @@ export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
 });
 
 export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
-  return await showPromise(axiosInstance.post(`/admin/approveKyc/${id}`), {
+	const payload = {id, createdAt};
+  return await showPromise(axiosInstance.post(`/admin/approveKyc/${id}`, payload), {
     loading: 'Approving...',
     success: 'KYC approved',
     error: 'Failed to approve',
@@ -48,8 +49,10 @@ export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
 export const disapproveKycAsync = createAsyncThunk(
   'kyc/disapprove',
   async (id) => {
+	const payload = { id, createdAt };
+
     return await showPromise(
-      axiosInstance.post(`/admin/disapproveKyc/${id}`),
+      axiosInstance.post(`/admin/disapproveKyc/${id}`, payload),
       {
         loading: 'Disapproving...',
         success: 'KYC disapproved',
