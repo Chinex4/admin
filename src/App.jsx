@@ -19,6 +19,7 @@ import StakingPage from './pages/dashboard/StakingPage';
 import StakingRequestPage from './pages/dashboard/StakingRequestPage';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import { Toaster } from 'react-hot-toast';
+import AdvancedKYCPage from './pages/dashboard/AdvancedKYCPage';
 
 function App() {
 	return (
@@ -96,6 +97,14 @@ function App() {
 					/>
 					<Route
 						path='viewKyc'
+						element={<KYCPage />}
+					/>
+					<Route
+						path='viewAdvancedKyc'
+						element={<AdvancedKYCPage />}
+					/>
+					<Route
+						path='viewInstitutionalVerification'
 						element={<KYCPage />}
 					/>
 					<Route

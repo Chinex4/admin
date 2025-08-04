@@ -7,39 +7,40 @@ import {
   approveKycAsync,
   disapproveKycAsync,
   deleteKycAsync,
+  fetchAdvancedKycs,
 } from '../../slices/kycSlice';
 
-const dummyKycs = [
+const dummyAdvancedKycs = [
   {
     id: 1,
-    kycId: '916957265',
-    userId: '46a5ad400018e84a66adefac8273608d',
-    country: 'Algeria',
-    documentType: 'ID Card',
-    idNumber: '10872946072',
-    firstName: 'Philip',
-    lastName: 'Henry',
-    dateOfBirth: '2007-07-31',
-    createdAt: '2025-07-31 08:00:00',
-    frontImage:
-      'http://192.168.1.238/cashtradeproApi/image/edef6c289243bfc20bc8933071162e62.png',
-    backImage:
-      'http://192.168.1.238/cashtradeproApi/image/b3f50f27b000e5c0e9337715b8be9742.png',
+    proofOfAddress:
+      'http://192.168.1.238/cashtradeproApi/image/a93597b92fa9c8b81e93eaeb68c6401f.png',
+    createdAt: '8/3/2025, 12:46:44 PM',
+    userId: '52800f19ff6d48487da706e2374391e0',
+    kycId: '030472541',
     status: 'Pending',
-    approveDate: null,
+    updatedAt: null,
+    ipAddress: '192.168.1.238',
+    reviewedAt: null,
+    rejectionReason: null,
+    attempts: 0,
   },
 ];
 
-const KycTable = () => {
+const AdvancedKycTable = () => {
   const dispatch = useDispatch();
-  const basicKycs = useSelector((state) => state.kyc.basicKycs); // ✅ FIXED
+  const { kycs } = useSelector((state) => state.kyc.advancedKycs);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    dispatch(setKycs(dummyKycs));
+    dispatch(setKycs(dummyAdvancedKycs));
   }, [dispatch]);
+//   useEffect(() => {
+//     dispatch(fetchAdvancedKycs()); // for AdvancedKycTable
+//   }, [dispatch]);
 
-  const filtered = basicKycs.filter((kyc) =>
+
+  const filtered = kycs.filter((kyc) =>
     Object.values(kyc).some((val) =>
       String(val).toLowerCase().includes(search.toLowerCase()),
     ),
@@ -56,10 +57,12 @@ const KycTable = () => {
 
   return (
     <div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
-      <h2 className='text-xl font-semibold text-white mb-4'>KYC Submissions</h2>
+      <h2 className='text-xl font-semibold text-white mb-4'>
+        Advanced KYC Submissions
+      </h2>
       <input
         type='text'
-        placeholder='Search KYC...'
+        placeholder='Search...'
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className='w-full mb-4 px-4 py-2 rounded-md bg-[#111] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400'
@@ -71,17 +74,14 @@ const KycTable = () => {
               <th className='px-3 py-2'>#</th>
               <th className='px-3 py-2'>KYC ID</th>
               <th className='px-3 py-2'>User ID</th>
-              <th className='px-3 py-2'>Country</th>
-              <th className='px-3 py-2'>Document Type</th>
-              <th className='px-3 py-2'>ID Number</th>
-              <th className='px-3 py-2'>First Name</th>
-              <th className='px-3 py-2'>Last Name</th>
-              <th className='px-3 py-2'>Date of Birth</th>
-              <th className='px-3 py-2'>Front Image</th>
-              <th className='px-3 py-2'>Back Image</th>
-              <th className='px-3 py-2'>Status</th>
+              <th className='px-3 py-2'>Proof of Address</th>
               <th className='px-3 py-2'>Created At</th>
-              <th className='px-3 py-2'>Approved At</th>
+              <th className='px-3 py-2'>Updated At</th>
+              <th className='px-3 py-2'>IP Address</th>
+              <th className='px-3 py-2'>Status</th>
+              <th className='px-3 py-2'>Reviewed At</th>
+              <th className='px-3 py-2'>Rejection Reason</th>
+              <th className='px-3 py-2'>Attempts</th>
               <th className='px-3 py-2'>Action</th>
             </tr>
           </thead>
@@ -95,23 +95,16 @@ const KycTable = () => {
                 <td className='px-3 py-2'>{idx + 1}</td>
                 <td className='px-3 py-2'>{kyc.kycId}</td>
                 <td className='px-3 py-2'>{kyc.userId}</td>
-                <td className='px-3 py-2'>{kyc.country}</td>
-                <td className='px-3 py-2'>{kyc.documentType}</td>
-                <td className='px-3 py-2'>{kyc.idNumber}</td>
-                <td className='px-3 py-2'>{kyc.firstName}</td>
-                <td className='px-3 py-2'>{kyc.lastName}</td>
-                <td className='px-3 py-2'>{kyc.dateOfBirth}</td>
-
                 <td className='px-3 py-2'>
-                  {kyc.frontImage ? (
+                  {kyc.proofOfAddress ? (
                     <a
-                      href={kyc.frontImage}
+                      href={kyc.proofOfAddress}
                       target='_blank'
                       rel='noopener noreferrer'
                     >
                       <img
-                        src={kyc.frontImage}
-                        alt='front'
+                        src={kyc.proofOfAddress}
+                        alt='proof'
                         className='w-16 h-16 object-cover rounded hover:opacity-90 transition duration-150'
                       />
                     </a>
@@ -119,28 +112,14 @@ const KycTable = () => {
                     'N/A'
                   )}
                 </td>
-
-                <td className='px-3 py-2'>
-                  {kyc.backImage ? (
-                    <a
-                      href={kyc.backImage}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      <img
-                        src={kyc.backImage}
-                        alt='back'
-                        className='w-16 h-16 object-cover rounded hover:opacity-90 transition duration-150'
-                      />
-                    </a>
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-
+                <td className='px-3 py-2'>{kyc.createdAt}</td>
+                <td className='px-3 py-2'>{kyc.updatedAt || '—'}</td>
+                <td className='px-3 py-2'>{kyc.ipAddress}</td>
                 <td className='px-3 py-2'>{kyc.status}</td>
-                <td className='px-3 py-2'>{kyc.createdAt || '—'}</td>
-                <td className='px-3 py-2'>{kyc.approveDate || '—'}</td>
+                <td className='px-3 py-2'>{kyc.reviewedAt || '—'}</td>
+                <td className='px-3 py-2'>{kyc.rejectionReason || '—'}</td>
+                <td className='px-3 py-2'>{kyc.attempts}</td>
+
                 <td className='px-3 py-2 relative z-50'>
                   <Popover className='relative z-50'>
                     <>
@@ -187,4 +166,4 @@ const KycTable = () => {
   );
 };
 
-export default KycTable;
+export default AdvancedKycTable;

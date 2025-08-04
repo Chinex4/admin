@@ -57,6 +57,8 @@ const items = [
 		children: [
 			{ to: '/dashboard/viewProofs', text: 'About proof of payment' },
 			{ to: '/dashboard/viewKyc', text: 'About Kyc' },
+			{ to: '/dashboard/viewAdvancedKyc', text: 'About Advanced Kyc' },
+			{ to: '/dashboard/viewInstitutionalVerification', text: 'About Institutional Verification' },
 		],
 	},
 	{

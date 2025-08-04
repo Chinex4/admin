@@ -28,7 +28,7 @@ const store = configureStore({
 	trades: tradeReducer,
 	wallets: walletReducer,
 	proofs: proofReducer,
-	kycs: kycReducer,
+	kyc: kycReducer,
 	copyTraders: copyTraderReducer,
 	copiedTraders: copiedTraderReducer,
 	signals: signalReducer,
