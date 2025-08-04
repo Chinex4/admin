@@ -33,7 +33,7 @@ export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
 });
 
 export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
-	const payload = {id, createdAt};
+	const payload = { createdAt};
   return await showPromise(axiosInstance.patch(`/admin/approveKyc/${id}`, payload), {
     loading: 'Approving...',
     success: 'KYC approved',
@@ -49,7 +49,7 @@ export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
 export const disapproveKycAsync = createAsyncThunk(
   'kyc/disapprove',
   async (id) => {
-	const payload = { id, createdAt };
+	const payload = { createdAt };
 
     return await showPromise(
       axiosInstance.patch(`/admin/disapproveKyc/${id}`, payload),
