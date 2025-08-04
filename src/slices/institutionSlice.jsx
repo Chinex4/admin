@@ -17,8 +17,10 @@ export const fetchInstitutionalVerifications = createAsyncThunk(
 export const approveInstitution = createAsyncThunk(
   'institution/approve',
   async (id) => {
+    const payload = { createdAt };
+
     return await showPromise(
-      axiosInstance.patch(`/admin/approveInstitution/${id}`),
+      axiosInstance.patch(`/admin/approveInstitution/${id}`, payload),
       {
         loading: 'Approving...',
         success: 'Institution approved',
@@ -31,8 +33,10 @@ export const approveInstitution = createAsyncThunk(
 export const rejectInstitution = createAsyncThunk(
   'institution/reject',
   async (id) => {
+    const payload = { createdAt };
+
     return await showPromise(
-      axiosInstance.patch(`/admin/rejectInstitution/${id}`),
+      axiosInstance.patch(`/admin/rejectInstitution/${id}`, payload),
       {
         loading: 'Rejecting...',
         success: 'Institution rejected',
@@ -53,6 +57,21 @@ export const deleteInstitution = createAsyncThunk(
         error: 'Failed to delete',
       },
     ).then(() => id);
+  },
+);
+export const updateInstitution = createAsyncThunk(
+  'institution/update',
+  async ({ id, updates }) => {
+    const payload = { ...updates, createdAt };
+    const res = await showPromise(
+      axiosInstance.put(`/admin/updateInstitution/${id}`, payload),
+      {
+        loading: 'Updating...',
+        success: 'Institution updated',
+        error: 'Update failed',
+      },
+    );
+    return res.data.updatedInstitution;
   },
 );
 

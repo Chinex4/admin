@@ -7,6 +7,10 @@ const EditAdvancedKycModal = ({ isOpen, onClose, kyc, onSave }) => {
     rejectionReason: '',
   });
 
+  const createdAt = new Date().toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+
   useEffect(() => {
     if (kyc) {
       setFormData({
@@ -20,7 +24,12 @@ const EditAdvancedKycModal = ({ isOpen, onClose, kyc, onSave }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = () => {
-    onSave(formData);
+    const dataWithTimestamp = {
+      ...formData,
+      createdAt, // or use kyc.createdAt if you want to retain original
+    };
+
+    onSave(dataWithTimestamp);
     onClose();
   };
 

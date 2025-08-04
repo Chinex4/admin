@@ -11,10 +11,15 @@ const EditKycModal = ({ isOpen, setIsOpen, kycData }) => {
   useEffect(() => {
     if (kycData) reset(kycData);
   }, [kycData]);
+  const createdAt = new Date().toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+
 
   const onSubmit = (data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, val]) => formData.append(key, val));
+    formData.append('createdAt', createdAt);
     dispatch(updateKycAsync({ id: kycData.id, formData }));
     setIsOpen(false);
   };
