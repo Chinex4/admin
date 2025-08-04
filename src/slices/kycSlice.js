@@ -88,7 +88,7 @@ export const updateAdvancedKycAsync = createAsyncThunk(
         error: 'Update failed',
       },
     );
-    return res.data.updatedKyc;
+    return res.data.message;
   },
 );
 
