@@ -18,7 +18,7 @@ export const approveInstitution = createAsyncThunk(
   'institution/approve',
   async (id) => {
     return await showPromise(
-      axiosInstance.post(`/admin/approveInstitution/${id}`),
+      axiosInstance.patch(`/admin/approveInstitution/${id}`),
       {
         loading: 'Approving...',
         success: 'Institution approved',
@@ -32,7 +32,7 @@ export const rejectInstitution = createAsyncThunk(
   'institution/reject',
   async (id) => {
     return await showPromise(
-      axiosInstance.post(`/admin/rejectInstitution/${id}`),
+      axiosInstance.patch(`/admin/rejectInstitution/${id}`),
       {
         loading: 'Rejecting...',
         success: 'Institution rejected',

@@ -33,7 +33,7 @@ export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
 });
 
 export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
-  return await showPromise(axiosInstance.post(`/admin/approveKyc/${id}`), {
+  return await showPromise(axiosInstance.patch(`/admin/approveKyc/${id}`), {
     loading: 'Approving...',
     success: 'KYC approved',
     error: 'Failed to approve',
@@ -41,18 +41,33 @@ export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
     id,
     status: 'Approved',
     approveDate: createdAt,
-	createdAt
+    createdAt,
   }));
 });
 
 export const disapproveKycAsync = createAsyncThunk(
   'kyc/disapprove',
   async (id) => {
-    return await showPromise(axiosInstance.post(`/admin/disapproveKyc/${id}`), {
+    return await showPromise(axiosInstance.patch(`/admin/disapproveKyc/${id}`), {
       loading: 'Disapproving...',
       success: 'KYC disapproved',
       error: 'Failed to disapprove',
     }).then(() => ({ id, status: 'Disapproved', createdAt }));
+  },
+);
+
+export const updateKycAsync = createAsyncThunk(
+  'kyc/update',
+  async ({ id, formData }) => {
+    const res = await showPromise(
+      axiosInstance.put(`/admin/updateKyc/${id}`, formData),
+      {
+        loading: 'Updating...',
+        success: 'KYC updated',
+        error: 'Failed to update',
+      },
+    );
+    return res.data.message; // return updated KYC
   },
 );
 
@@ -116,6 +131,14 @@ const kycSlice = createSlice({
           matchAdv.status = status;
           matchAdv.approveDate = null;
         }
+      })
+      .addCase(updateKycAsync.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const updateIn = (list) =>
+          list.map((k) => (k.id === updated.id ? { ...k, ...updated } : k));
+
+        state.basicKycs = updateIn(state.basicKycs);
+        state.advancedKycs = updateIn(state.advancedKycs);
       });
   },
 });
