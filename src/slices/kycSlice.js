@@ -33,7 +33,7 @@ export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
 });
 
 export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
-  return await showPromise(axiosInstance.patch(`/admin/approveKyc/${id}`), {
+  return await showPromise(axiosInstance.post(`/admin/approveKyc/${id}`), {
     loading: 'Approving...',
     success: 'KYC approved',
     error: 'Failed to approve',
@@ -48,11 +48,14 @@ export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
 export const disapproveKycAsync = createAsyncThunk(
   'kyc/disapprove',
   async (id) => {
-    return await showPromise(axiosInstance.patch(`/admin/disapproveKyc/${id}`), {
-      loading: 'Disapproving...',
-      success: 'KYC disapproved',
-      error: 'Failed to disapprove',
-    }).then(() => ({ id, status: 'Disapproved', createdAt }));
+    return await showPromise(
+      axiosInstance.post(`/admin/disapproveKyc/${id}`),
+      {
+        loading: 'Disapproving...',
+        success: 'KYC disapproved',
+        error: 'Failed to disapprove',
+      },
+    ).then(() => ({ id, status: 'Disapproved', createdAt }));
   },
 );
 
@@ -68,6 +71,21 @@ export const updateKycAsync = createAsyncThunk(
       },
     );
     return res.data.message; // return updated KYC
+  },
+);
+
+export const updateAdvancedKycAsync = createAsyncThunk(
+  'kyc/updateAdvanced',
+  async ({ id, updates }) => {
+    const res = await showPromise(
+      axiosInstance.put(`/admin/updateAdvancedKyc/${id}`, updates),
+      {
+        loading: 'Updating...',
+        success: 'Advanced KYC updated',
+        error: 'Update failed',
+      },
+    );
+    return res.data.updatedKyc;
   },
 );
 
@@ -139,6 +157,11 @@ const kycSlice = createSlice({
 
         state.basicKycs = updateIn(state.basicKycs);
         state.advancedKycs = updateIn(state.advancedKycs);
+      })
+      .addCase(updateAdvancedKycAsync.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const index = state.advancedKycs.findIndex((k) => k.id === updated.id);
+        if (index !== -1) state.advancedKycs[index] = updated;
       });
   },
 });
