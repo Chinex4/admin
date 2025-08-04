@@ -1,32 +1,49 @@
-import React, { useEffect, useState, Fragment } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, Fragment } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setKycs } from '../../slices/kycSlice';
+import { Popover, Transition } from '@headlessui/react';
+import { EllipsisVertical } from 'lucide-react';
 import {
-  setKycs,
-  deleteKyc,
-  approveKyc,
-  disapproveKyc,
-} from "../../slices/kycSlice";
-import { Popover, Transition } from "@headlessui/react";
-import { EllipsisVertical } from "lucide-react";
+  approveKycAsync,
+  disapproveKycAsync,
+  deleteKycAsync,
+} from './../../slices/kycSlice';
 
 const dummyKycs = [
   {
     id: 1,
-    userName: "fname undefined",
-    documentType: "passport",
-    userId: "46a5ad400018e84a66adefac8273608d",
-    frontView: "https://via.placeholder.com/100",
-    backView: "",
-    status: "Approved",
-    submitDate: "5/15/2025, 6:58:31 AM",
+    country: 'Nigeria',
+    documentType: 'Passport',
+    idNumber: 'A1234567',
+    firstName: 'John',
+    lastName: 'Doe',
+    dateOfBirth: '1992-08-15',
+    frontImage: 'https://randomuser.me/api/portraits/men/75.jpg',
+    backImage: 'https://via.placeholder.com/100x100?text=Back+Image',
+    status: 'Pending',
+    submitDate: '2025-07-30 08:15:00',
     approveDate: null,
+  },
+  {
+    id: 2,
+    country: 'Canada',
+    documentType: "Driver's License",
+    idNumber: 'DL7892345',
+    firstName: 'Emily',
+    lastName: 'Smith',
+    dateOfBirth: '1987-02-20',
+    frontImage: 'https://randomuser.me/api/portraits/women/65.jpg',
+    backImage: '',
+    status: 'Approved',
+    submitDate: '2025-07-28 14:30:00',
+    approveDate: '2025-07-29 10:00:00',
   },
 ];
 
 const KycTable = () => {
   const dispatch = useDispatch();
   const { kycs } = useSelector((state) => state.kycs);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     dispatch(setKycs(dummyKycs));
@@ -34,14 +51,17 @@ const KycTable = () => {
 
   const filtered = kycs.filter((kyc) =>
     Object.values(kyc).some((val) =>
-      String(val).toLowerCase().includes(search.toLowerCase())
-    )
+      String(val).toLowerCase().includes(search.toLowerCase()),
+    ),
   );
 
   const directActions = [
-    { label: "Delete KYC", action: (id) => dispatch(deleteKyc(id)) },
-    { label: "Approve KYC", action: (id) => dispatch(approveKyc(id)) },
-    { label: "Disapprove KYC", action: (id) => dispatch(disapproveKyc(id)) },
+    { label: 'Delete KYC', action: (id) => dispatch(deleteKycAsync(id)) },
+    { label: 'Approve KYC', action: (id) => dispatch(approveKycAsync(id)) },
+    {
+      label: 'Disapprove KYC',
+      action: (id) => dispatch(disapproveKycAsync(id)),
+    },
   ];
 
   return (
@@ -60,47 +80,72 @@ const KycTable = () => {
             <tr>
               <th className='px-3 py-2'>#</th>
               <th className='px-3 py-2'>User Name</th>
+              <th className='px-3 py-2'>Country</th>
               <th className='px-3 py-2'>Document Type</th>
-              <th className='px-3 py-2'>User ID</th>
-              <th className='px-3 py-2'>Front View</th>
-              <th className='px-3 py-2'>Back View</th>
+              <th className='px-3 py-2'>ID Number</th>
+              <th className='px-3 py-2'>First Name</th>
+              <th className='px-3 py-2'>Last Name</th>
+              <th className='px-3 py-2'>Date of Birth</th>
+              <th className='px-3 py-2'>Front Image</th>
+              <th className='px-3 py-2'>Back Image</th>
               <th className='px-3 py-2'>Status</th>
               <th className='px-3 py-2'>Submit Date</th>
               <th className='px-3 py-2'>Approve Date</th>
               <th className='px-3 py-2'>Action</th>
             </tr>
           </thead>
+
           <tbody>
             {filtered.map((kyc, idx) => (
               <tr
                 key={kyc.id}
                 className='border-b border-gray-800 hover:bg-[#2a2a2a]'
               >
-                <td className='px-3 py-2'>{idx + 1}</td>
-                <td className='px-3 py-2'>{kyc.userName}</td>
+                <td className='px-3 py-2'>{kyc.country}</td>
                 <td className='px-3 py-2'>{kyc.documentType}</td>
-                <td className='px-3 py-2'>{kyc.userId}</td>
+                <td className='px-3 py-2'>{kyc.idNumber}</td>
+                <td className='px-3 py-2'>{kyc.firstName}</td>
+                <td className='px-3 py-2'>{kyc.lastName}</td>
+                <td className='px-3 py-2'>{kyc.dateOfBirth}</td>
                 <td className='px-3 py-2'>
-                  {kyc.frontView ?
-                    <img
-                      src={kyc.frontView}
-                      alt='front'
-                      className='w-16 h-16 object-cover rounded'
-                    />
-                  : "N/A"}
+                  {kyc.frontImage ? (
+                    <a
+                      href={kyc.frontImage}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <img
+                        src={kyc.frontImage}
+                        alt='front'
+                        className='w-16 h-16 object-cover rounded hover:opacity-90 transition duration-150'
+                      />
+                    </a>
+                  ) : (
+                    'N/A'
+                  )}
                 </td>
+
                 <td className='px-3 py-2'>
-                  {kyc.backView ?
-                    <img
-                      src={kyc.backView}
-                      alt='back'
-                      className='w-16 h-16 object-cover rounded'
-                    />
-                  : "N/A"}
+                  {kyc.backImage ? (
+                    <a
+                      href={kyc.backImage}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <img
+                        src={kyc.backImage}
+                        alt='back'
+                        className='w-16 h-16 object-cover rounded hover:opacity-90 transition duration-150'
+                      />
+                    </a>
+                  ) : (
+                    'N/A'
+                  )}
                 </td>
+
                 <td className='px-3 py-2'>{kyc.status}</td>
                 <td className='px-3 py-2'>{kyc.submitDate}</td>
-                <td className='px-3 py-2'>{kyc.approveDate || "—"}</td>
+                <td className='px-3 py-2'>{kyc.approveDate || '—'}</td>
                 <td className='px-3 py-2 relative z-50'>
                   <Popover className='relative z-50'>
                     <>
