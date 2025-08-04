@@ -2,6 +2,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../utils/axiosInstance';
 import { showPromise } from '../utils/toast';
+const createdAt = new Date().toLocaleString('en-US', {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+});
 
 export const fetchInstitutionalVerifications = createAsyncThunk(
   'institution/fetchAll',
@@ -21,7 +24,7 @@ export const approveInstitution = createAsyncThunk(
         success: 'Institution approved',
         error: 'Failed to approve',
       },
-    ).then(() => id);
+    ).then(() => ({ id, createdAt }));
   },
 );
 
@@ -35,7 +38,7 @@ export const rejectInstitution = createAsyncThunk(
         success: 'Institution rejected',
         error: 'Failed to reject',
       },
-    ).then(() => id);
+    ).then(() => ({ id, createdAt }));
   },
 );
 
@@ -72,11 +75,13 @@ const institutionSlice = createSlice({
         state.list = state.list.filter((item) => item.id !== action.payload);
       })
       .addCase(approveInstitution.fulfilled, (state, action) => {
-        const match = state.list.find((item) => item.id === action.payload);
+        const { id, createdAt } = action.payload;
+        const match = state.list.find((item) => item.id === id);
         if (match) match.status = 'Approved';
       })
       .addCase(rejectInstitution.fulfilled, (state, action) => {
-        const match = state.list.find((item) => item.id === action.payload);
+        const { id, createdAt } = action.payload;
+        const match = state.list.find((item) => item.id === id);
         if (match) match.status = 'Rejected';
       });
   },
