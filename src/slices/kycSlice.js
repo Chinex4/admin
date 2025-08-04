@@ -3,6 +3,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../utils/axiosInstance';
 import { showPromise } from '../utils/toast';
 
+const createdAt = new Date().toLocaleString('en-US', {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+});
+
 // ========== THUNKS ==========
 // BASIC
 export const fetchBasicKycs = createAsyncThunk('kyc/fetchBasic', async () => {
@@ -36,7 +40,8 @@ export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
   }).then(() => ({
     id,
     status: 'Approved',
-    approveDate: new Date().toLocaleString(),
+    approveDate: createdAt,
+	createdAt
   }));
 });
 
@@ -47,7 +52,7 @@ export const disapproveKycAsync = createAsyncThunk(
       loading: 'Disapproving...',
       success: 'KYC disapproved',
       error: 'Failed to disapprove',
-    }).then(() => ({ id, status: 'Disapproved' }));
+    }).then(() => ({ id, status: 'Disapproved', createdAt }));
   },
 );
 
@@ -87,7 +92,7 @@ const kycSlice = createSlice({
         );
       })
       .addCase(approveKycAsync.fulfilled, (state, action) => {
-        const { id, status, approveDate } = action.payload;
+        const { id, status, approveDate, createdAt } = action.payload;
         const matchBasic = state.basicKycs.find((k) => k.id === id);
         const matchAdv = state.advancedKycs.find((k) => k.id === id);
         if (matchBasic) {
@@ -100,7 +105,7 @@ const kycSlice = createSlice({
         }
       })
       .addCase(disapproveKycAsync.fulfilled, (state, action) => {
-        const { id, status } = action.payload;
+        const { id, status, createdAt } = action.payload;
         const matchBasic = state.basicKycs.find((k) => k.id === id);
         const matchAdv = state.advancedKycs.find((k) => k.id === id);
         if (matchBasic) {
