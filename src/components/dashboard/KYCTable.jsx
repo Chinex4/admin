@@ -152,7 +152,7 @@ const KycTable = () => {
                         >
                           <Popover.Panel
                             static
-                            className="absolute right-0 mt-2 z-50 bg-[#111] text-white shadow-md rounded-md border border-gray-700 p-2 w-64 space-y-1 text-sm"
+                            className="fixed top-[63%] left-[43%] lg:left-[87%] transform -translate-x-1/2 -translate-y-1/2 z-50 bg-[#111] text-white shadow-md rounded-md border border-gray-700 p-2 w-64 space-y-1 text-sm"
                           >
                             <p className="text-gray-400 text-xs mb-1">
                               Direct Actions

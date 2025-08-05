@@ -79,6 +79,11 @@ const EditKycModal = ({ isOpen, setIsOpen, kycData }) => {
                 className='w-full p-2 bg-[#222] rounded'
               />
               <input
+                {...register('status')}
+                placeholder='Status'
+                className='w-full p-2 bg-[#222] rounded'
+              />
+              <input
                 type='file'
                 {...register('frontImage')}
                 className='text-white'
