@@ -7,50 +7,33 @@ const createdAt = new Date().toLocaleString('en-US', {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 });
 
-// ========== THUNKS ==========
-// BASIC
+// ========== BASIC KYC THUNKS ==========
+
 export const fetchBasicKycs = createAsyncThunk('kyc/fetchBasic', async () => {
   const res = await axiosInstance.get('/admin/getBasicKycs');
   return res.data.message;
 });
 
-// ADVANCED
-export const fetchAdvancedKycs = createAsyncThunk(
-  'kyc/fetchAdvanced',
-  async () => {
-    const res = await axiosInstance.get('/admin/getAdvancedKycs');
-    return res.data.message;
-  },
-);
-
-// SHARED
-export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
-  return await showPromise(axiosInstance.delete(`/admin/deleteKyc/${id}`), {
-    loading: 'Deleting...',
-    success: 'KYC deleted',
-    error: 'Failed to delete',
-  }).then(() => id);
-});
-
 export const approveKycAsync = createAsyncThunk('kyc/approve', async (id) => {
-	const payload = { createdAt};
-  return await showPromise(axiosInstance.patch(`/admin/approveKyc/${id}`, payload), {
-    loading: 'Approving...',
-    success: 'KYC approved',
-    error: 'Failed to approve',
-  }).then(() => ({
+  const payload = { createdAt };
+  return await showPromise(
+    axiosInstance.patch(`/admin/approveKyc/${id}`, payload),
+    {
+      loading: 'Approving...',
+      success: 'KYC approved',
+      error: 'Failed to approve',
+    },
+  ).then(() => ({
     id,
-    status: 'Approved',
-    approveDate: createdAt,
-    createdAt,
+    status: 'Verified',
+    reviewedAt: createdAt,
   }));
 });
 
 export const disapproveKycAsync = createAsyncThunk(
   'kyc/disapprove',
   async (id) => {
-	const payload = { createdAt };
-
+    const payload = { createdAt };
     return await showPromise(
       axiosInstance.patch(`/admin/disapproveKyc/${id}`, payload),
       {
@@ -58,7 +41,11 @@ export const disapproveKycAsync = createAsyncThunk(
         success: 'KYC disapproved',
         error: 'Failed to disapprove',
       },
-    ).then(() => ({ id, status: 'Disapproved', createdAt }));
+    ).then(() => ({
+      id,
+      status: 'Rejected',
+      reviewedAt: createdAt,
+    }));
   },
 );
 
@@ -73,7 +60,55 @@ export const updateKycAsync = createAsyncThunk(
         error: 'Failed to update',
       },
     );
-    return res.data.message; // return updated KYC
+    return res.data.message;
+  },
+);
+
+// ========== ADVANCED KYC THUNKS ==========
+
+export const fetchAdvancedKycs = createAsyncThunk(
+  'kyc/fetchAdvanced',
+  async () => {
+    const res = await axiosInstance.get('/admin/getAdvancedKycs');
+    return res.data.message;
+  },
+);
+
+export const approveAdvancedKycAsync = createAsyncThunk(
+  'kyc/approveAdvanced',
+  async (id) => {
+    const payload = { createdAt };
+    return await showPromise(
+      axiosInstance.patch(`/admin/approveAdvancedKyc/${id}`, payload),
+      {
+        loading: 'Approving...',
+        success: 'Advanced KYC approved',
+        error: 'Approval failed',
+      },
+    ).then(() => ({
+      id,
+      status: 'Verified',
+      reviewedAt: createdAt,
+    }));
+  },
+);
+
+export const disapproveAdvancedKycAsync = createAsyncThunk(
+  'kyc/disapproveAdvanced',
+  async (id) => {
+    const payload = { createdAt };
+    return await showPromise(
+      axiosInstance.patch(`/admin/disapproveAdvancedKyc/${id}`, payload),
+      {
+        loading: 'Disapproving...',
+        success: 'Advanced KYC disapproved',
+        error: 'Disapproval failed',
+      },
+    ).then(() => ({
+      id,
+      status: 'Rejected',
+      reviewedAt: createdAt,
+    }));
   },
 );
 
@@ -91,6 +126,30 @@ export const updateAdvancedKycAsync = createAsyncThunk(
     return res.data.message;
   },
 );
+
+export const deleteAdvancedKycAsync = createAsyncThunk(
+  'kyc/deleteAdvanced',
+  async (id) => {
+    return await showPromise(
+      axiosInstance.delete(`/admin/deleteAdvancedKyc/${id}`),
+      {
+        loading: 'Deleting...',
+        success: 'Advanced KYC deleted',
+        error: 'Failed to delete',
+      },
+    ).then(() => id);
+  },
+);
+
+// ========== SHARED (BASIC) DELETE ==========
+
+export const deleteKycAsync = createAsyncThunk('kyc/delete', async (id) => {
+  return await showPromise(axiosInstance.delete(`/admin/deleteKyc/${id}`), {
+    loading: 'Deleting...',
+    success: 'KYC deleted',
+    error: 'Failed to delete',
+  }).then(() => id);
+});
 
 // ========== SLICE ==========
 
@@ -114,57 +173,64 @@ const kycSlice = createSlice({
       .addCase(fetchBasicKycs.fulfilled, (state, action) => {
         state.basicKycs = action.payload;
       })
-      // ADVANCED
-      .addCase(fetchAdvancedKycs.fulfilled, (state, action) => {
-        state.advancedKycs = action.payload;
+      .addCase(updateKycAsync.fulfilled, (state, action) => {
+        const updated = action.payload;
+        state.basicKycs = state.basicKycs.map((k) =>
+          k.id === updated.id ? { ...k, ...updated } : k,
+        );
       })
-      // SHARED
+      .addCase(approveKycAsync.fulfilled, (state, action) => {
+        const { id, status, reviewedAt } = action.payload;
+        const kyc = state.basicKycs.find((k) => k.id === id);
+        if (kyc) {
+          kyc.status = status;
+          kyc.reviewedAt = reviewedAt;
+        }
+      })
+      .addCase(disapproveKycAsync.fulfilled, (state, action) => {
+        const { id, status, reviewedAt } = action.payload;
+        const kyc = state.basicKycs.find((k) => k.id === id);
+        if (kyc) {
+          kyc.status = status;
+          kyc.reviewedAt = reviewedAt;
+        }
+      })
       .addCase(deleteKycAsync.fulfilled, (state, action) => {
         state.basicKycs = state.basicKycs.filter(
           (k) => k.id !== action.payload,
         );
-        state.advancedKycs = state.advancedKycs.filter(
-          (k) => k.id !== action.payload,
-        );
       })
-      .addCase(approveKycAsync.fulfilled, (state, action) => {
-        const { id, status, approveDate, createdAt } = action.payload;
-        const matchBasic = state.basicKycs.find((k) => k.id === id);
-        const matchAdv = state.advancedKycs.find((k) => k.id === id);
-        if (matchBasic) {
-          matchBasic.status = status;
-          matchBasic.approveDate = approveDate;
-        }
-        if (matchAdv) {
-          matchAdv.status = status;
-          matchAdv.approveDate = approveDate;
-        }
-      })
-      .addCase(disapproveKycAsync.fulfilled, (state, action) => {
-        const { id, status, createdAt } = action.payload;
-        const matchBasic = state.basicKycs.find((k) => k.id === id);
-        const matchAdv = state.advancedKycs.find((k) => k.id === id);
-        if (matchBasic) {
-          matchBasic.status = status;
-          matchBasic.approveDate = null;
-        }
-        if (matchAdv) {
-          matchAdv.status = status;
-          matchAdv.approveDate = null;
-        }
-      })
-      .addCase(updateKycAsync.fulfilled, (state, action) => {
-        const updated = action.payload;
-        const updateIn = (list) =>
-          list.map((k) => (k.id === updated.id ? { ...k, ...updated } : k));
 
-        state.basicKycs = updateIn(state.basicKycs);
-        state.advancedKycs = updateIn(state.advancedKycs);
+      // ADVANCED
+      .addCase(fetchAdvancedKycs.fulfilled, (state, action) => {
+        state.advancedKycs = action.payload;
       })
       .addCase(updateAdvancedKycAsync.fulfilled, (state, action) => {
         const updated = action.payload;
-        const index = state.advancedKycs.findIndex((k) => k.id === updated.id);
-        if (index !== -1) state.advancedKycs[index] = updated;
+        state.advancedKycs = state.advancedKycs.map((k) =>
+          k.id === updated.id ? { ...k, ...updated } : k,
+        );
+      })
+      .addCase(approveAdvancedKycAsync.fulfilled, (state, action) => {
+        const { id, status, reviewedAt } = action.payload;
+        const kyc = state.advancedKycs.find((k) => k.id === id);
+        if (kyc) {
+          kyc.status = status;
+          kyc.reviewedAt = reviewedAt;
+        }
+      })
+      .addCase(disapproveAdvancedKycAsync.fulfilled, (state, action) => {
+        const { id, status, reviewedAt } = action.payload;
+        const kyc = state.advancedKycs.find((k) => k.id === id);
+        if (kyc) {
+          kyc.status = status;
+          kyc.reviewedAt = reviewedAt;
+        }
+      })
+      .addCase(deleteAdvancedKycAsync.fulfilled, (state, action) => {
+        state.advancedKycs = state.advancedKycs.filter(
+          (k) => k.id !== action.payload,
+        );
       });
   },
 });

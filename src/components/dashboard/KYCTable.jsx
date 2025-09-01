@@ -39,7 +39,7 @@ const KycTable = () => {
   );
 
   const directActions = [
-    { label: "Edit KYC", action: (kyc) => openEditModal(kyc) },
+    // { label: "Edit KYC", action: (kyc) => openEditModal(kyc) },
     { label: "Approve KYC", action: (id) => dispatch(approveKycAsync(id)) },
     {
       label: "Disapprove KYC",
