@@ -2,12 +2,22 @@ import React from "react";
 import DashboardCards from "../../components/dashboard/DashboardCards";
 import ProofOfPaymentTable from "../../components/dashboard/ProofOfPaymentTable";
 
-import { FileText, CheckCircle, Clock } from "lucide-react";
-
 const proofCardData = [
-  { label: "Total Proofs", value: "578", icon: <FileText size={36} /> },
-  { label: "Approved Proofs", value: "435", icon: <CheckCircle size={36} /> },
-  { label: "Pending Proofs", value: "143", icon: <Clock size={36} /> },
+  {
+    label: "Total Proofs",
+    value: "578",
+    icon: <i className='bi bi-file-earmark-text text-3xl' />,
+  },
+  {
+    label: "Approved Proofs",
+    value: "435",
+    icon: <i className='bi bi-check-circle text-3xl' />,
+  },
+  {
+    label: "Pending Proofs",
+    value: "143",
+    icon: <i className='bi bi-clock text-3xl' />,
+  },
 ];
 
 const ProofPage = () => {

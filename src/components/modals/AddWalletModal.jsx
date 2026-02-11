@@ -59,7 +59,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 							leave='ease-in duration-200'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#1f1f1f] p-6 text-white shadow-xl transition-all'>
+							<Dialog.Panel className='w-full max-w-2xl transform overflow-hidden rounded-xl modal-panel p-6 transition-all'>
 								<Dialog.Title className='text-lg font-semibold mb-4'>
 									Add Wallet
 								</Dialog.Title>
@@ -79,7 +79,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 														[field]: e.target.value,
 													}))
 												}
-												className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+												className='input-dark text-sm'
 											/>
 										</div>
 									))}
@@ -88,7 +88,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 									{(wallet.networks || []).map((net, index) => (
 										<div
 											key={index}
-											className='border border-gray-700 p-4 rounded-md space-y-2'>
+											className='card-subtle space-y-2'>
 											<div>
 												<label className='block text-sm mb-1'>
 													Network Name
@@ -101,7 +101,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 														updated[index].name = e.target.value;
 														setWallet({ ...wallet, networks: updated });
 													}}
-													className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+													className='input-dark text-sm'
 												/>
 											</div>
 											<div>
@@ -116,7 +116,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 														updated[index].deposit_address = e.target.value;
 														setWallet({ ...wallet, networks: updated });
 													}}
-													className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+													className='input-dark text-sm'
 												/>
 											</div>
 											<div className='flex gap-4'>
@@ -134,7 +134,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 															);
 															setWallet({ ...wallet, networks: updated });
 														}}
-														className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+														className='input-dark text-sm'
 													/>
 												</div>
 												<div className='flex-1'>
@@ -149,7 +149,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 															updated[index].min_deposit = e.target.value;
 															setWallet({ ...wallet, networks: updated });
 														}}
-														className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+														className='input-dark text-sm'
 													/>
 												</div>
 											</div>
@@ -181,7 +181,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 												],
 											}))
 										}
-										className='mt-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 text-sm'>
+										className='button-ghost mt-2 text-sm'>
 										+ Add Network
 									</button>
 								</div>
@@ -189,12 +189,12 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 								<div className='mt-6 flex justify-end space-x-2'>
 									<button
 										onClick={onClose}
-										className='px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-sm'>
+										className='button-ghost text-sm'>
 										Cancel
 									</button>
 									<button
 										onClick={handleSave}
-										className='px-4 py-2 bg-lime-600 rounded hover:bg-lime-500 text-sm'>
+										className='button-primary text-sm'>
 										Save Wallet
 									</button>
 								</div>
@@ -208,3 +208,7 @@ const AddWalletModal = ({ isOpen, onClose }) => {
 };
 
 export default AddWalletModal;
+
+
+
+

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
-import { DoorOpen, Menu } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/thunks/authThunk";
 import Cookies from "js-cookie";
@@ -35,7 +34,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className='h-screen w-full bg-[#171717] text-white flex overflow-hidden'>
+    <div className='h-screen w-full admin-shell flex overflow-hidden'>
       {/* Fixed Sidebar */}
       <div ref={sidebarRef} className='h-full'>
         <Sidebar
@@ -48,29 +47,55 @@ const DashboardLayout = () => {
       {/* Scrollable Main Content */}
       <div className='flex-1 flex flex-col h-full overflow-hidden'>
         {/* Topbar */}
-        <header className='flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-[#111111]'>
-          <button
-            className='text-white md:hidden'
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-          >
-            <Menu />
-          </button>
-          <button
-            className='hidden md:block text-white'
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
-            <Menu />
-          </button>
-
-          <div onClick={handleLogout}>
-            <button className='bg-red-500 px-6 py-2 rounded-md text-white'>
-              <span>Log out</span>
+        <header className='topbar flex items-center justify-between px-4 py-3'>
+          <div className='flex items-center gap-3'>
+            <button
+              className='icon-button md:hidden'
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+            >
+              <i className='bi bi-list text-lg' />
             </button>
+            <button
+              className='icon-button hidden md:flex'
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+              <i className='bi bi-layout-sidebar-inset text-lg' />
+            </button>
+            <div className='hidden md:flex flex-col leading-tight'>
+              <span className='text-[10px] uppercase tracking-[0.3em] text-slate-400'>
+                Admin Console
+              </span>
+              <span className='text-lg font-semibold text-slate-100'>
+                Overview
+              </span>
+            </div>
+          </div>
+
+          <div className='flex items-center gap-3'>
+            <div className='hidden md:flex items-center gap-2 rounded-full border border-[color:var(--color-stroke)] bg-[color:var(--color-surface-1)] px-3 py-1'>
+              <i className='bi bi-search text-slate-400' />
+              <input
+                type='text'
+                placeholder='Search'
+                className='bg-transparent text-sm text-slate-200 placeholder:text-slate-500 outline-none'
+              />
+            </div>
+            <button className='icon-button'>
+              <i className='bi bi-bell text-base' />
+            </button>
+            <button className='icon-button'>
+              <i className='bi bi-moon text-base' />
+            </button>
+            <div onClick={handleLogout}>
+              <button className='button-danger'>
+                <span>Log out</span>
+              </button>
+            </div>
           </div>
         </header>
 
         {/* Main scroll area */}
-        <main className='flex-1 overflow-y-auto px-4 py-6'>
+        <main className='flex-1 overflow-y-auto px-6 py-6'>
           <Outlet />
         </main>
       </div>
@@ -79,3 +104,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+

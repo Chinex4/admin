@@ -44,13 +44,13 @@ const ChangeSignalModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-xl bg-[#1a1a1a] p-6 text-white shadow-xl transition-all'>
+							<Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-xl modal-panel p-6 transition-all'>
 								<Dialog.Title className='text-lg font-bold mb-4'>
 									Change Signal Message
 								</Dialog.Title>
 								<textarea
 									rows='4'
-									className='w-full p-2 rounded bg-[#2a2a2a] text-white'
+									className='input-dark'
 									value={signalMsg}
 									onChange={(e) => setSignalMsg(e.target.value)}
 								/>
@@ -76,3 +76,7 @@ const ChangeSignalModal = () => {
 };
 
 export default ChangeSignalModal;
+
+
+
+

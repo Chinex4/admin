@@ -39,13 +39,13 @@ const Login = () => {
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-[#171717] text-white'>
+    <div className='auth-shell'>
       <Toaster />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='bg-[#1f1f1f] p-8 rounded-xl w-full max-w-md shadow-lg space-y-6'
+        className='auth-card space-y-6'
       >
-        <h2 className='text-2xl font-bold text-center text-lime-400'>
+        <h2 className='text-2xl font-bold text-center text-lime-300'>
           Admin Login
         </h2>
 
@@ -54,7 +54,7 @@ const Login = () => {
           <input
             type='email'
             {...register("email")}
-            className='w-full px-4 py-2 bg-[#2a2a2a] border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-400'
+            className='input-dark'
           />
           {errors.email && (
             <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>
@@ -66,7 +66,7 @@ const Login = () => {
           <input
             type='password'
             {...register("password")}
-            className='w-full px-4 py-2 bg-[#2a2a2a] border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-400'
+            className='input-dark'
           />
           {errors.password && (
             <p className='text-red-500 text-sm mt-1'>
@@ -78,7 +78,7 @@ const Login = () => {
         <button
           type='submit'
           disabled={loading}
-          className='w-full bg-lime-400 text-black font-semibold py-2 rounded-md hover:bg-lime-300 transition'
+          className='button-primary w-full'
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -88,3 +88,4 @@ const Login = () => {
 };
 
 export default Login;
+

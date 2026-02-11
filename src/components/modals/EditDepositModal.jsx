@@ -3,6 +3,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Fragment } from 'react';
 import { clearDepositModal, updateDeposit } from '../../slices/depositSlice';
+import { updateAdminDeposit, fetchAdminDeposits } from '../../redux/thunks/depositsThunk';
+import { showPromise } from '../../utils/toast';
 
 const EditDepositModal = () => {
 	const dispatch = useDispatch();
@@ -16,7 +18,26 @@ const EditDepositModal = () => {
 	};
 
 	const handleSave = () => {
-		dispatch(updateDeposit(form));
+		const depositId = form?.id;
+		if (!depositId) return;
+
+		const promise = new Promise((resolve, reject) => {
+			dispatch(updateAdminDeposit({ depositId, payload: form }))
+				.unwrap()
+				.then((res) => {
+					dispatch(fetchAdminDeposits());
+					dispatch(updateDeposit(form));
+					resolve(res);
+				})
+				.catch((err) => reject(err));
+		});
+
+		showPromise(promise, {
+			loading: 'Updating deposit...',
+			success: 'Deposit updated',
+			error: (msg) => msg?.message || msg || 'Failed to update deposit',
+		});
+
 		dispatch(clearDepositModal());
 	};
 
@@ -50,7 +71,7 @@ const EditDepositModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-xl transform overflow-hidden rounded-xl bg-[#1a1a1a] p-6 text-white shadow-xl transition-all'>
+							<Dialog.Panel className='w-full max-w-xl transform overflow-hidden rounded-xl modal-panel p-6 transition-all'>
 								<Dialog.Title className='text-lg font-bold mb-4'>
 									Edit Deposit Details
 								</Dialog.Title>
@@ -67,7 +88,7 @@ const EditDepositModal = () => {
 													name={key}
 													value={form[key]}
 													onChange={handleChange}
-													className='bg-[#2a2a2a] text-white rounded px-2 py-1'
+													className='input-dark text-sm'
 												/>
 											</div>
 										);
@@ -95,3 +116,7 @@ const EditDepositModal = () => {
 };
 
 export default EditDepositModal;
+
+
+
+

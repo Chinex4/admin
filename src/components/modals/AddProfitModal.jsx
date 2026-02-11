@@ -47,7 +47,7 @@ const AddProfitModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-md rounded-xl bg-[#1a1a1a] p-6 text-white shadow-xl'>
+							<Dialog.Panel className='w-full max-w-md rounded-xl modal-panel p-6'>
 								<Dialog.Title className='text-lg font-bold mb-4'>
 									Add Profit
 								</Dialog.Title>
@@ -55,7 +55,7 @@ const AddProfitModal = () => {
 									type='number'
 									value={profit}
 									onChange={(e) => setProfit(e.target.value)}
-									className='w-full px-3 py-2 rounded bg-[#2a2a2a]'
+									className='input-dark'
 								/>
 								<div className='flex justify-end gap-3 mt-6'>
 									<button
@@ -79,3 +79,7 @@ const AddProfitModal = () => {
 };
 
 export default AddProfitModal;
+
+
+
+

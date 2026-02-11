@@ -36,7 +36,7 @@ const ProofImageModal = () => {
 						enterTo='opacity-100 scale-100'
 						leaveFrom='opacity-100 scale-100'
 						leaveTo='opacity-0 scale-95'>
-						<Dialog.Panel className='relative bg-[#111] rounded-lg p-4 shadow-xl max-w-2xl w-full'>
+						<Dialog.Panel className='relative modal-panel p-4 max-w-2xl w-full'>
 							<img
 								src={selectedImage}
 								alt='Proof of Payment'
@@ -51,3 +51,7 @@ const ProofImageModal = () => {
 };
 
 export default ProofImageModal;
+
+
+
+

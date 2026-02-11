@@ -53,7 +53,7 @@ const FundUserModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-md rounded-xl bg-[#1a1a1a] p-6 text-white shadow-xl'>
+							<Dialog.Panel className='w-full max-w-md rounded-xl modal-panel p-6'>
 								<Dialog.Title className='text-lg font-bold mb-4'>
 									Fund User Wallet
 								</Dialog.Title>
@@ -64,7 +64,7 @@ const FundUserModal = () => {
 											type='number'
 											value={amount}
 											onChange={(e) => setAmount(e.target.value)}
-											className='w-full px-3 py-2 rounded bg-[#2a2a2a]'
+											className='input-dark'
 										/>
 									</div>
 									<div>
@@ -72,7 +72,7 @@ const FundUserModal = () => {
 										<select
 											value={coin}
 											onChange={(e) => setCoin(e.target.value)}
-											className='w-full px-3 py-2 rounded bg-[#2a2a2a]'>
+											className='input-dark'>
 											{coinList.map((c) => (
 												<option
 													key={c}
@@ -105,3 +105,7 @@ const FundUserModal = () => {
 };
 
 export default FundUserModal;
+
+
+
+

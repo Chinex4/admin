@@ -33,7 +33,7 @@ const ProofOfPaymentTable = () => {
 	);
 
 	return (
-		<div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
+		<div className='mt-6 panel panel-pad'>
 			<h2 className='text-xl font-semibold text-white mb-4'>
 				Proof of Payment
 			</h2>
@@ -42,12 +42,12 @@ const ProofOfPaymentTable = () => {
 				placeholder='Search proof...'
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
-				className='w-full mb-4 px-4 py-2 rounded-md bg-[#111] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400'
+				className='input-dark mb-4'
 			/>
 
-			<div className='overflow-x-auto rounded-xl scrollbar-hide'>
-				<table className='table-auto text-sm text-left text-white w-full'>
-					<thead className='bg-[#121212] text-gray-300'>
+			<div className='table-wrap scrollbar-hide'>
+				<table className='table-base'>
+					<thead className='table-head'>
 						<tr>
 							<th className='px-3 py-2'>#</th>
 							<th className='px-3 py-2'>User Name</th>
@@ -61,7 +61,7 @@ const ProofOfPaymentTable = () => {
 						{filtered.map((proof, idx) => (
 							<tr
 								key={proof.id}
-								className='border-b border-gray-800 hover:bg-[#2a2a2a]'>
+								className='table-row'>
 								<td className='px-3 py-2'>{idx + 1}</td>
 								<td className='px-3 py-2'>{proof.userName}</td>
 								<td className='px-3 py-2'>
@@ -95,3 +95,5 @@ const ProofOfPaymentTable = () => {
 };
 
 export default ProofOfPaymentTable;
+
+

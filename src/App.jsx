@@ -21,6 +21,8 @@ import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import { Toaster } from 'react-hot-toast';
 import AdvancedKYCPage from './pages/dashboard/AdvancedKYCPage';
 import InstitutionalVerificationPage from './pages/dashboard/InstitutionalVerificationPage';
+import P2POrdersPage from './pages/dashboard/P2POrdersPage';
+import P2PPage from './pages/dashboard/P2PPage';
 
 function App() {
 	return (
@@ -131,6 +133,14 @@ function App() {
 					<Route
 						path='viewAllStakeRequest'
 						element={<StakingRequestPage />}
+					/>
+					<Route
+						path='viewP2POrders'
+						element={<P2POrdersPage />}
+					/>
+					<Route
+						path='p2p'
+						element={<P2PPage />}
 					/>
 				</Route>
 			</Route>

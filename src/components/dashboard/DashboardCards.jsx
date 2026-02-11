@@ -1,17 +1,24 @@
 import { useState, useEffect, useRef } from "react";
-import { PauseCircle } from "lucide-react";
 
 const DashboardCards = ({ cardData, centerSingleCard = false }) => {
   const gradientClasses = [
-    "bg-gradient-to-r from-lime-400 to-green-500",
-    "bg-gradient-to-r from-blue-500 to-indigo-600",
-    "bg-gradient-to-r from-purple-500 to-pink-500",
-    "bg-gradient-to-r from-amber-400 to-orange-500",
-    "bg-gradient-to-r from-teal-400 to-cyan-500",
-    "bg-gradient-to-r from-red-500 to-yellow-500",
+    "metric-card",
+    "metric-card variant-blue",
+    "metric-card variant-rose",
+    "metric-card variant-amber",
+    "metric-card variant-indigo",
+    "metric-card variant-teal",
+    "metric-card variant-violet",
+    "metric-card variant-emerald",
+    "metric-card variant-orange",
+    "metric-card variant-cyan",
+    "metric-card variant-lime",
+    "metric-card variant-pink",
+    "metric-card variant-sky",
+    "metric-card variant-slate",
   ];
 
-  const [cardBg, setCardBg] = useState(gradientClasses[0]);
+  const [colorIndex, setColorIndex] = useState(0);
   const [isCycling, setIsCycling] = useState(true);
   const intervalRef = useRef(null);
 
@@ -23,11 +30,7 @@ const DashboardCards = ({ cardData, centerSingleCard = false }) => {
   useEffect(() => {
     if (isCycling) {
       intervalRef.current = setInterval(() => {
-        setCardBg((prev) => {
-          const currentIndex = gradientClasses.indexOf(prev);
-          const nextIndex = (currentIndex + 1) % gradientClasses.length;
-          return gradientClasses[nextIndex];
-        });
+        setColorIndex((prev) => (prev + 1) % gradientClasses.length);
       }, 2000);
     }
 
@@ -37,7 +40,7 @@ const DashboardCards = ({ cardData, centerSingleCard = false }) => {
   if (!cardData || cardData.length === 0) {
     return (
       <section className='px-4 py-6'>
-        <div className='text-center text-gray-500 dark:text-gray-400'>
+        <div className='text-center muted-text'>
           No data available to display dashboard cards.
         </div>
       </section>
@@ -52,9 +55,9 @@ const DashboardCards = ({ cardData, centerSingleCard = false }) => {
         {isCycling && (
           <button
             onClick={handleColorCycle}
-            className='flex items-center gap-2 text-sm text-white bg-gradient-to-r from-stone-900 to-stone-800 hover:bg-stone-800/80 transition-all duration-300 px-3 rounded-md shadow py-2'
+            className='button-ghost flex items-center gap-2 text-sm'
           >
-            <PauseCircle size={16} />
+            <i className='bi bi-pause-circle text-base' />
             Stop Color Change
           </button>
         )}
@@ -63,14 +66,14 @@ const DashboardCards = ({ cardData, centerSingleCard = false }) => {
       <div
         className={`grid gap-6 ${
           isSingle
-            ? 'grid-cols-1 justify-center place-items-center'
-            : 'grid-cols-1 md:grid-cols-3'
+            ? 'grid-cols-1'
+            : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
         }`}
       >
         {cardData.map((card, index) => (
           <div
             key={index}
-            className={`${cardBg} rounded-xl p-6 text-white shadow-lg flex flex-col justify-between w-full max-w-sm`}
+            className={`${gradientClasses[colorIndex]} flex flex-col justify-between w-full`}
           >
             <div className='flex justify-left'>{card.icon}</div>
             <div className='mt-8'>
@@ -85,3 +88,7 @@ const DashboardCards = ({ cardData, centerSingleCard = false }) => {
 };
 
 export default DashboardCards;
+
+
+
+

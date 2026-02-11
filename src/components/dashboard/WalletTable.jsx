@@ -3,13 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setWallets } from "../../slices/walletSlice";
 import { deleteWallet } from "../../redux/thunks/walletsThunk";
 import axiosInstance from "../../utils/axiosInstance";
-import {
-  ChevronUp,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  MoreVertical,
-} from "lucide-react";
 import { Dialog, Transition, Menu, Listbox } from "@headlessui/react";
 import { updateWallet } from "../../redux/thunks/walletsThunk";
 import { showPromise, showSuccess } from "../../utils/toast";
@@ -148,12 +141,12 @@ const WalletsTable = () => {
   };
 
   return (
-    <div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
+    <div className='mt-6 panel panel-pad'>
       <div className='flex justify-between items-center mb-4'>
-        <h2 className='text-xl font-semibold text-white mb-4'>User Wallets</h2>
+        <h2 className='text-xl font-semibold text-slate-100 mb-4'>User Wallets</h2>
         <button
           onClick={() => setShowAddModal(true)}
-          className='bg-black px-6 py-2 rounded-lg hover:bg-black/80 transition-all duration-300'
+          className='button-primary'
         >
           Add Coin
         </button>
@@ -166,11 +159,11 @@ const WalletsTable = () => {
           setSearch(e.target.value);
           setCurrentPage(1);
         }}
-        className='w-full mb-4 px-4 py-2 rounded-md bg-[#111] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400'
+        className='input-dark mb-4'
       />
-      <div className='overflow-x-auto rounded-xl scrollbar-hide'>
-        <table className='table-auto text-sm text-left text-white w-full'>
-          <thead className='bg-[#121212] text-gray-300'>
+      <div className='table-wrap scrollbar-hide'>
+        <table className='table-base'>
+          <thead className='table-head'>
             <tr>
               <th className='px-3 py-2'>#</th>
               {columnKeys.map((key) => (
@@ -183,8 +176,8 @@ const WalletsTable = () => {
                     {key}
                     {sortConfig.key === key ?
                       sortConfig.direction === "asc" ?
-                        <ChevronUp size={14} />
-                      : <ChevronDown size={14} />
+                        <i className='bi bi-chevron-up text-xs' />
+                      : <i className='bi bi-chevron-down text-xs' />
                     : null}
                   </div>
                 </th>
@@ -199,7 +192,7 @@ const WalletsTable = () => {
               return (
                 <tr
                   key={wallet.id}
-                  className='border-b border-gray-800 hover:bg-[#2a2a2a]'
+                  className='table-row'
                 >
                   <td className='px-3 py-2'>
                     {(currentPage - 1) * itemsPerPage + idx + 1}
@@ -244,12 +237,12 @@ const WalletsTable = () => {
                           <Listbox>
                             {({ open }) => (
                               <div className='relative max-w-[200px] text-xs'>
-                                <Listbox.Button className='w-full bg-zinc-900 border border-zinc-700 px-2 py-1 rounded-md text-left truncate flex items-center justify-between'>
+                                <Listbox.Button className='select-dark w-full px-2 py-1 text-left truncate flex items-center justify-between'>
                                   <span>Select item</span>
-                                  <ChevronDown className='ml-2 h-4 w-4 text-gray-400' />
+                                  <i className='bi bi-chevron-down text-gray-400' />
                                 </Listbox.Button>
                                 {open && (
-                                  <Listbox.Options className='absolute mt-1 max-h-48 w-full overflow-auto rounded-md bg-zinc-900 border border-zinc-700 shadow-lg z-50'>
+                                  <Listbox.Options className='menu-panel absolute mt-1 max-h-48 w-full overflow-auto z-50'>
                                     {parsedItems.map((item, idx) => (
                                       <Listbox.Option
                                         key={idx}
@@ -257,8 +250,8 @@ const WalletsTable = () => {
                                         className={({ active }) =>
                                           `cursor-pointer px-3 py-1 truncate ${
                                             active ?
-                                              "bg-zinc-800 text-lime-400"
-                                            : "text-white"
+                                              "bg-[#151c26] text-[color:var(--color-accent)]"
+                                            : "text-slate-100"
                                           }`
                                         }
                                       >
@@ -277,10 +270,10 @@ const WalletsTable = () => {
 
                   <td className='px-3 py-2 whitespace-nowrap text-right relative'>
                     <Menu as='div' className='relative inline-block text-left'>
-                      <Menu.Button className='p-1 hover:bg-zinc-800 rounded-full'>
-                        <MoreVertical className='w-5 h-5 text-gray-400' />
+                      <Menu.Button className='icon-button'>
+                        <i className='bi bi-three-dots-vertical text-gray-400' />
                       </Menu.Button>
-                      <Menu.Items className='absolute right-0 z-10 mt-2 w-40 origin-top-right divide-y divide-gray-700 rounded-md bg-[#1f1f1f] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
+                      <Menu.Items className='menu-panel absolute right-0 z-10 mt-2 w-40 origin-top-right'>
                         <div className='px-1 py-1'>
                           <Menu.Item>
                             {({ active }) => (
@@ -288,8 +281,8 @@ const WalletsTable = () => {
                                 onClick={() => handleEdit(wallet)}
                                 className={`${
                                   active ?
-                                    "bg-gray-700 text-white"
-                                  : "text-gray-200"
+                                    "bg-[#151c26] text-slate-100"
+                                  : "text-slate-200"
                                 } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                               >
                                 Edit Wallet
@@ -302,8 +295,8 @@ const WalletsTable = () => {
                                 onClick={() => handleDelete(wallet.id)}
                                 className={`${
                                   active ?
-                                    "bg-red-600 text-white"
-                                  : "text-red-400"
+                                    "bg-red-500 text-slate-100"
+                                  : "text-red-300"
                                 } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                               >
                                 Delete Wallet
@@ -322,13 +315,13 @@ const WalletsTable = () => {
       </div>
 
       {/* Pagination */}
-      <div className='flex justify-center items-center mt-4 text-sm text-white space-x-3'>
+      <div className='flex justify-center items-center mt-4 text-sm text-slate-100 space-x-3'>
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className='bg-gray-700 px-3 py-1 rounded disabled:opacity-50 flex items-center'
+          className='button-ghost flex items-center'
         >
-          <ChevronLeft size={16} />
+          <i className='bi bi-chevron-left text-sm' />
         </button>
         <span>
           Page {currentPage} of {totalPages}
@@ -336,9 +329,9 @@ const WalletsTable = () => {
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className='bg-gray-700 px-3 py-1 rounded disabled:opacity-50 flex items-center'
+          className='button-ghost flex items-center'
         >
-          <ChevronRight size={16} />
+          <i className='bi bi-chevron-right text-sm' />
         </button>
       </div>
 
@@ -368,7 +361,7 @@ const WalletsTable = () => {
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-2xl transform overflow-hidden rounded-xl bg-[#1f1f1f] p-6 text-white shadow-xl transition-all'>
+                <Dialog.Panel className='w-full max-w-2xl transform overflow-hidden rounded-xl modal-panel p-6 transition-all'>
                   <Dialog.Title className='text-lg font-semibold mb-4'>
                     Edit Wallet
                   </Dialog.Title>
@@ -401,7 +394,7 @@ const WalletsTable = () => {
                                 [key]: e.target.value,
                               }))
                             }
-                            className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+                            className='input-dark text-sm'
                           />
                         </div>
                       : null
@@ -413,7 +406,7 @@ const WalletsTable = () => {
                       return (
                         <div
                           key={index}
-                          className='border border-gray-700 p-4 rounded-md space-y-2'
+                          className='card-subtle space-y-2'
                         >
                           <div>
                             <label className='block text-sm mb-1'>
@@ -430,7 +423,7 @@ const WalletsTable = () => {
                                   network: updated,
                                 });
                               }}
-                              className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+                              className='input-dark text-sm'
                             />
                           </div>
                           <div>
@@ -448,7 +441,7 @@ const WalletsTable = () => {
                                   network: updated,
                                 });
                               }}
-                              className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+                              className='input-dark text-sm'
                             />
                           </div>
                           <div className='flex gap-4'>
@@ -468,7 +461,7 @@ const WalletsTable = () => {
                                     network: updated,
                                   });
                                 }}
-                                className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+                                className='input-dark text-sm'
                               />
                             </div>
                             <div className='flex-1'>
@@ -486,7 +479,7 @@ const WalletsTable = () => {
                                     network: updated,
                                   });
                                 }}
-                                className='w-full bg-zinc-900 border border-gray-700 px-3 py-2 rounded-md text-sm'
+                                className='input-dark text-sm'
                               />
                             </div>
                           </div>
@@ -500,7 +493,7 @@ const WalletsTable = () => {
                                 network: updated,
                               });
                             }}
-                            className='text-sm text-red-400 hover:underline mt-2'
+                            className='text-sm text-red-300 hover:underline mt-2'
                           >
                             Remove Network
                           </button>
@@ -523,7 +516,7 @@ const WalletsTable = () => {
                           ],
                         })
                       }
-                      className='mt-2 px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 text-sm'
+                      className='button-ghost mt-2 text-sm'
                     >
                       + Add Network
                     </button>
@@ -532,13 +525,13 @@ const WalletsTable = () => {
                   <div className='mt-6 flex justify-end space-x-2'>
                     <button
                       onClick={closeModal}
-                      className='px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-sm'
+                      className='button-ghost text-sm'
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSave}
-                      className='px-4 py-2 bg-lime-600 rounded hover:bg-lime-500 text-sm'
+                      className='button-primary text-sm'
                     >
                       Save Changes
                     </button>
@@ -558,3 +551,8 @@ const WalletsTable = () => {
 };
 
 export default WalletsTable;
+
+
+
+
+

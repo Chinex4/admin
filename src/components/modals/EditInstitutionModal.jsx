@@ -40,7 +40,7 @@ const EditInstitutionModal = ({ isOpen, onClose, institution, onSave }) => {
     <Dialog open={isOpen} onClose={onClose} className='relative z-50'>
       <div className='fixed inset-0 bg-black/50' aria-hidden='true' />
       <div className='fixed inset-0 flex items-center justify-center p-4'>
-        <Dialog.Panel className='bg-[#111] p-6 rounded-md w-full max-w-md border border-gray-700 text-white'>
+        <Dialog.Panel className='modal-panel p-6 w-full max-w-md'>
           <Dialog.Title className='text-lg font-bold mb-4'>
             Edit Institution
           </Dialog.Title>
@@ -48,7 +48,7 @@ const EditInstitutionModal = ({ isOpen, onClose, institution, onSave }) => {
             {['contact', 'email', 'institutionName', 'location', 'assets'].map(
               (field) => (
                 <label key={field} className='block'>
-                  <span className='text-sm text-gray-300 capitalize'>
+                  <span className='muted-text text-sm capitalize'>
                     {field}
                   </span>
                   <input
@@ -56,7 +56,7 @@ const EditInstitutionModal = ({ isOpen, onClose, institution, onSave }) => {
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
-                    className='w-full mt-1 px-3 py-2 bg-black border border-gray-700 rounded-md text-white'
+                    className='input-dark'
                   />
                 </label>
               ),
@@ -80,3 +80,7 @@ const EditInstitutionModal = ({ isOpen, onClose, institution, onSave }) => {
 };
 
 export default EditInstitutionModal;
+
+
+
+

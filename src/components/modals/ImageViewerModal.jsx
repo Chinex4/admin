@@ -20,7 +20,7 @@ const ImageViewerModal = ({ isOpen, onClose, imageUrl }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="inline-block w-full max-w-4xl p-4 my-20 overflow-hidden text-left align-middle transition-all transform bg-[#1f1f1f] shadow-xl rounded-2xl">
+            <Dialog.Panel className="inline-block w-full max-w-4xl p-4 my-20 overflow-hidden text-left align-middle transition-all transform modal-panel rounded-2xl">
               <div className="flex justify-end">
                 <button
                   onClick={onClose}
@@ -45,3 +45,8 @@ const ImageViewerModal = ({ isOpen, onClose, imageUrl }) => {
 };
 
 export default ImageViewerModal;
+
+
+
+
+

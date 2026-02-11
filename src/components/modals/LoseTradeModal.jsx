@@ -45,7 +45,7 @@ const LoseTradeModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='bg-[#1a1a1a] p-6 rounded-xl text-white w-full max-w-md'>
+							<Dialog.Panel className='modal-panel p-6 rounded-xl w-full max-w-md'>
 								<Dialog.Title className='text-lg font-bold'>
 									Add Loss Amount
 								</Dialog.Title>
@@ -54,7 +54,7 @@ const LoseTradeModal = () => {
 									value={amount}
 									onChange={(e) => setAmount(e.target.value)}
 									placeholder='Enter amount'
-									className='w-full mt-4 px-3 py-2 rounded bg-[#2a2a2a]'
+									className='input-dark mt-4'
 								/>
 								<div className='flex justify-end mt-6 gap-3'>
 									<button
@@ -78,3 +78,8 @@ const LoseTradeModal = () => {
 };
 
 export default LoseTradeModal;
+
+
+
+
+

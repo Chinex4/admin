@@ -151,3 +151,21 @@ export const enableOtpLogin = createAsyncThunk(
 		}
 	}
 );
+
+// ✅ 11. Update User Crypto Balances
+export const updateUserBalances = createAsyncThunk(
+	'admin/updateUserBalances',
+	async ({ accToken, balances_json }, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.put(
+				`admin/updateUserBalances/${accToken}`,
+				{ balances_json }
+			);
+			return res;
+		} catch (err) {
+			return rejectWithValue(
+				err.response?.data?.message || 'Failed to update user balances'
+			);
+		}
+	}
+);

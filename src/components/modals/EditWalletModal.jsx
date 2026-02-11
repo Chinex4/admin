@@ -51,7 +51,7 @@ const EditWalletModal = () => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-xl bg-[#1a1a1a] p-6 text-white shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-xl modal-panel p-6 transition-all">
                 <Dialog.Title className="text-lg font-bold mb-4">
                   Edit Wallet
                 </Dialog.Title>
@@ -66,7 +66,7 @@ const EditWalletModal = () => {
                           name={key}
                           value={form[key]}
                           onChange={handleChange}
-                          className="bg-[#2a2a2a] text-white rounded px-2 py-1"
+                          className="input-dark text-sm"
                         />
                       </div>
                     );
@@ -96,3 +96,7 @@ const EditWalletModal = () => {
 };
 
 export default EditWalletModal;
+
+
+
+

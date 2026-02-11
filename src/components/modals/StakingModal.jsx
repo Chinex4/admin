@@ -68,7 +68,7 @@ const StakingModal = () => {
 							enterTo='opacity-100 scale-100'
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'>
-							<Dialog.Panel className='w-full max-w-md p-6 bg-[#1a1a1a] text-white rounded-lg'>
+							<Dialog.Panel className='w-full max-w-md p-6 modal-panel rounded-lg'>
 								<Dialog.Title className='text-lg font-bold mb-4'>
 									{stakingModalType === 'edit'
 										? 'Edit Staking'
@@ -82,7 +82,7 @@ const StakingModal = () => {
 											value={form[field]}
 											onChange={handleChange}
 											placeholder={field}
-											className='w-full mb-3 px-4 py-2 rounded bg-[#2b2b2b] border border-gray-700'
+											className='input-dark mb-3'
 										/>
 									)
 								)}
@@ -108,3 +108,7 @@ const StakingModal = () => {
 };
 
 export default StakingModal;
+
+
+
+

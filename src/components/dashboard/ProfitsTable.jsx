@@ -32,7 +32,7 @@ const ProfitsTable = () => {
 	);
 
 	return (
-		<div className='mt-6 bg-[#1f1f1f] rounded-xl p-6'>
+		<div className='mt-6 panel panel-pad'>
 			<h2 className='text-xl font-semibold text-white mb-4'>All Profits</h2>
 
 			<input
@@ -40,12 +40,12 @@ const ProfitsTable = () => {
 				placeholder='Search profits...'
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
-				className='w-full mb-4 px-4 py-2 rounded-md bg-[#111] text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400'
+				className='input-dark mb-4'
 			/>
 
-			<div className='overflow-x-auto rounded-xl scrollbar-hide'>
-				<table className='table-auto text-sm text-left text-white w-full'>
-					<thead className='bg-[#121212] text-gray-300'>
+			<div className='table-wrap scrollbar-hide'>
+				<table className='table-base'>
+					<thead className='table-head'>
 						<tr>
 							<th className='px-3 py-2 whitespace-nowrap'>#</th>
 							{Object.keys(dummyProfits[0])
@@ -64,7 +64,7 @@ const ProfitsTable = () => {
 						{filtered.map((profit, idx) => (
 							<tr
 								key={profit.id}
-								className='border-b border-gray-800 hover:bg-[#2a2a2a]'>
+								className='table-row'>
 								<td className='px-3 py-2'>{idx + 1}</td>
 								{Object.keys(profit)
 									.filter((k) => k !== 'id')
@@ -92,3 +92,5 @@ const ProfitsTable = () => {
 };
 
 export default ProfitsTable;
+
+

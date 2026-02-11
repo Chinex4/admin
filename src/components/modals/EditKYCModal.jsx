@@ -40,7 +40,7 @@ const EditKycModal = ({ isOpen, setIsOpen, kycData }) => {
         </Transition.Child>
 
         <div className='fixed inset-0 flex items-center justify-center p-4'>
-          <Dialog.Panel className='w-full max-w-lg bg-[#121212] p-6 rounded-lg shadow-xl'>
+          <Dialog.Panel className='w-full max-w-lg modal-panel p-6'>
             <Dialog.Title className='text-white text-lg font-semibold mb-4'>
               Edit KYC
             </Dialog.Title>
@@ -51,37 +51,37 @@ const EditKycModal = ({ isOpen, setIsOpen, kycData }) => {
               <input
                 {...register('country')}
                 placeholder='Country'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('documentType')}
                 placeholder='Document Type'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('idNumber')}
                 placeholder='ID Number'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('firstName')}
                 placeholder='First Name'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('lastName')}
                 placeholder='Last Name'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('dateOfBirth')}
                 placeholder='Date of Birth'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 {...register('status')}
                 placeholder='Status'
-                className='w-full p-2 bg-[#222] rounded'
+                className='input-dark'
               />
               <input
                 type='file'
@@ -107,3 +107,7 @@ const EditKycModal = ({ isOpen, setIsOpen, kycData }) => {
 };
 
 export default EditKycModal;
+
+
+
+
