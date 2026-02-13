@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
 import { showError } from '../../utils/toast';
+import { normalizeOrder } from '../../utils/p2p';
 
 const PAGE_SIZE = 10;
 
@@ -15,24 +16,27 @@ const P2POrdersPage = () => {
 		setPage(1);
 	}, [search]);
 
-	useEffect(() => {
-		const fetchOrders = async () => {
-			try {
-				setLoading(true);
-				setError('');
-				const res = await axiosInstance.get('admin/p2pOrders');
-				const payload = res?.data?.message ?? [];
-				setOrders(Array.isArray(payload) ? payload : []);
-			} catch (err) {
-				console.error('Failed to fetch P2P orders:', err);
-				const msg = 'Failed to fetch P2P orders';
-				setError(msg);
-				showError(msg);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const fetchOrders = async () => {
+		try {
+			setLoading(true);
+			setError('');
+			const res = await axiosInstance.get('admin/p2pOrders');
+			const payload = res?.data?.message ?? res?.data ?? [];
+			const normalized = Array.isArray(payload)
+				? payload.map((item, index) => normalizeOrder(item, index))
+				: [];
+			setOrders(normalized);
+		} catch (err) {
+			console.error('Failed to fetch P2P orders:', err);
+			const msg = 'Failed to fetch P2P orders';
+			setError(msg);
+			showError(msg);
+		} finally {
+			setLoading(false);
+		}
+	};
 
+	useEffect(() => {
 		fetchOrders();
 	}, []);
 
@@ -105,7 +109,15 @@ const P2POrdersPage = () => {
 				{loading ? (
 					<p className='muted-text mt-6'>Loading orders...</p>
 				) : error ? (
-					<p className='mt-6 text-red-400'>{error}</p>
+					<div className='mt-6 flex items-center justify-between gap-3 text-red-400'>
+						<p>{error}</p>
+						<button
+							className='button-ghost text-xs'
+							onClick={fetchOrders}
+						>
+							Retry
+						</button>
+					</div>
 				) : (
 					<>
 						<div className='mt-6 table-wrap scrollbar-hide'>

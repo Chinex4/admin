@@ -1,9 +1,12 @@
 // src/utils/axiosInstance.js
 import axios from 'axios';
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://192.168.1.238/cashtradeproApi/api/task/';
+
 const axiosInstance = axios.create({
-  baseURL: 'http://192.168.1.238/cashtradeproApi/api/task/',
-  // baseURL: 'http://10.84.244.22/backend/api/task/',
+  baseURL: API_BASE_URL,
 });
 
 // Attach token if exists
