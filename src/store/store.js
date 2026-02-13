@@ -18,6 +18,7 @@ import stakingRequestReducer from '../slices/stakingRequestSlice';
 import authReducer from '../slices/authSlice';
 import dataReducer from '../slices/fetchSlice';
 import institutionReducer from '../slices/institutionSlice';
+import p2pOrdersReducer from '../slices/p2pOrderSlice';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -38,6 +39,7 @@ const store = configureStore({
     staking: stakingReducer,
     stakingRequests: stakingRequestReducer,
     data: dataReducer,
+    p2pOrders: p2pOrdersReducer,
   },
 });
 
