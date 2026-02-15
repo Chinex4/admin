@@ -61,15 +61,10 @@ const items = [
   {
     icon: 'bi-person-plus',
     label: 'Copy Traders Table',
-    routes: ['/dashboard/viewCopyTraders'],
-    children: [{ to: '/dashboard/viewCopyTraders', text: 'About Copy Trader' }],
-  },
-  {
-    icon: 'bi-people-fill',
-    label: 'Subscribed User Table',
-    routes: ['/dashboard/viewCopiedTraders'],
+    routes: ['/dashboard/viewCopyTraders', '/dashboard/viewCopiedTraders'],
     children: [
-      { to: '/dashboard/viewCopiedTraders', text: 'View All Copy Trader' },
+      { to: '/dashboard/viewCopyTraders', text: 'About Copy Trade' },
+      { to: '/dashboard/viewCopiedTraders', text: 'Copy Trade Orders' },
     ],
   },
   {
