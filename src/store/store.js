@@ -20,6 +20,9 @@ import dataReducer from '../slices/fetchSlice';
 import institutionReducer from '../slices/institutionSlice';
 import p2pOrdersReducer from '../slices/p2pOrderSlice';
 import fundTransferReducer from '../slices/fundTransferSlice';
+import convertOrderReducer from '../slices/convertOrderSlice';
+import referralReducer from '../slices/referralSlice';
+import notificationReducer from '../slices/notificationSlice';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -42,6 +45,9 @@ const store = configureStore({
     data: dataReducer,
     p2pOrders: p2pOrdersReducer,
     fundTransfers: fundTransferReducer,
+    convertOrders: convertOrderReducer,
+    referrals: referralReducer,
+    notifications: notificationReducer,
   },
 });
 

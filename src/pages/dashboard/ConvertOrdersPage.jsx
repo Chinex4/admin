@@ -2,37 +2,35 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  deleteFundTransfer,
-  fetchFundTransfers,
-  updateFundTransfer,
-} from '../../redux/thunks/fundTransferThunk';
+  deleteConvertOrder,
+  fetchConvertOrders,
+  updateConvertOrder,
+} from '../../redux/thunks/convertOrderThunk';
 import {
-  selectFundTransferActionError,
-  selectFundTransferActionLoading,
-  selectFundTransfers,
-  selectFundTransfersError,
-  selectFundTransfersLoading,
-} from '../../selectors/fundTransferSelectors';
-import { clearFundTransferActionError } from '../../slices/fundTransferSlice';
+  selectConvertOrderActionError,
+  selectConvertOrderActionLoading,
+  selectConvertOrders,
+  selectConvertOrdersError,
+  selectConvertOrdersLoading,
+} from '../../selectors/convertOrderSelectors';
+import { clearConvertOrderActionError } from '../../slices/convertOrderSlice';
 import { showError, showSuccess } from '../../utils/toast';
 
 const TABLE_COLUMNS = [
   { key: 'id', label: 'ID' },
-  { key: 'transferId', label: 'Transfer ID' },
+  { key: 'convertId', label: 'Convert ID' },
   { key: 'userId', label: 'User ID' },
-  { key: 'fromAccount', label: 'From Account' },
-  { key: 'toAccount', label: 'To Account' },
-  { key: 'asset', label: 'Asset' },
-  { key: 'amount', label: 'Amount' },
-  { key: 'amountUsd', label: 'Amount (USD)' },
-  { key: 'coinQuantity', label: 'Coin Quantity' },
-  { key: 'spotAccountBefore', label: 'Spot Account Before' },
-  { key: 'spotAccountAfter', label: 'Spot Account After' },
-  { key: 'futureAccountBefore', label: 'Future Account Before' },
-  { key: 'futureAccountAfter', label: 'Future Account After' },
-  { key: 'totalAssetAfter', label: 'Total Asset After' },
+  { key: 'fromSymbol', label: 'From Symbol' },
+  { key: 'toSymbol', label: 'To Symbol' },
+  { key: 'fromCoinId', label: 'From Coin ID' },
+  { key: 'toCoinId', label: 'To Coin ID' },
+  { key: 'fromAmount', label: 'From Amount' },
+  { key: 'toAmount', label: 'To Amount' },
+  { key: 'orderMode', label: 'Order Mode' },
+  { key: 'quoteRate', label: 'Quote Rate' },
+  { key: 'limitPrice', label: 'Limit Price' },
+  { key: 'payload', label: 'Payload' },
   { key: 'status', label: 'Status' },
-  { key: 'rawRequest', label: 'Raw Request' },
   { key: 'createdAt', label: 'Created At' },
 ];
 
@@ -52,23 +50,21 @@ const toInputString = (value) => {
   return String(value);
 };
 
-const normalizeTransfer = (item = {}, index = 0) => ({
-  id: item?.id ?? item?.transferId ?? `row-${index}`,
-  transferId: item?.transferId ?? '',
+const normalizeOrder = (item = {}, index = 0) => ({
+  id: item?.id ?? item?.convertId ?? `row-${index}`,
+  convertId: item?.convertId ?? '',
   userId: item?.userId ?? '',
-  fromAccount: item?.fromAccount ?? '',
-  toAccount: item?.toAccount ?? '',
-  asset: item?.asset ?? '',
-  amount: item?.amount ?? '',
-  amountUsd: item?.amountUsd ?? '',
-  coinQuantity: item?.coinQuantity ?? '',
-  spotAccountBefore: item?.spotAccountBefore ?? '',
-  spotAccountAfter: item?.spotAccountAfter ?? '',
-  futureAccountBefore: item?.futureAccountBefore ?? '',
-  futureAccountAfter: item?.futureAccountAfter ?? '',
-  totalAssetAfter: item?.totalAssetAfter ?? '',
+  fromSymbol: item?.fromSymbol ?? '',
+  toSymbol: item?.toSymbol ?? '',
+  fromCoinId: item?.fromCoinId ?? '',
+  toCoinId: item?.toCoinId ?? '',
+  fromAmount: item?.fromAmount ?? '',
+  toAmount: item?.toAmount ?? '',
+  orderMode: item?.orderMode ?? '',
+  quoteRate: item?.quoteRate ?? '',
+  limitPrice: item?.limitPrice ?? '',
+  payload: item?.payload ?? '',
   status: item?.status ?? '',
-  rawRequest: item?.rawRequest ?? '',
   createdAt: item?.createdAt ?? '',
 });
 
@@ -89,7 +85,7 @@ const formatValue = (value) => {
 const parseEditValue = (key, value) => {
   const trimmed = String(value ?? '').trim();
   if (trimmed === '') return '';
-  if (key === 'rawRequest') {
+  if (key === 'payload') {
     try {
       return JSON.parse(trimmed);
     } catch {
@@ -99,8 +95,8 @@ const parseEditValue = (key, value) => {
   return trimmed;
 };
 
-const getActionId = (transfer) => {
-  const value = transfer?.id ?? transfer?.transferId;
+const getActionId = (order) => {
+  const value = order?.id ?? order?.convertId;
   return value === null || value === undefined ? '' : String(value).trim();
 };
 
@@ -109,66 +105,62 @@ const formatLabel = (key) =>
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (char) => char.toUpperCase());
 
-const FundTransfersPage = () => {
+const ConvertOrdersPage = () => {
   const dispatch = useDispatch();
-  const list = useSelector(selectFundTransfers);
-  const loading = useSelector(selectFundTransfersLoading);
-  const error = useSelector(selectFundTransfersError);
-  const actionLoading = useSelector(selectFundTransferActionLoading);
-  const actionError = useSelector(selectFundTransferActionError);
+  const list = useSelector(selectConvertOrders);
+  const loading = useSelector(selectConvertOrdersLoading);
+  const error = useSelector(selectConvertOrdersError);
+  const actionLoading = useSelector(selectConvertOrderActionLoading);
+  const actionError = useSelector(selectConvertOrderActionError);
 
   const [search, setSearch] = useState('');
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedTransfer, setSelectedTransfer] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  const transfers = useMemo(
-    () => list.map((item, index) => normalizeTransfer(item, index)),
+  const orders = useMemo(
+    () => list.map((item, index) => normalizeOrder(item, index)),
     [list]
   );
 
-  const filteredTransfers = useMemo(() => {
+  const filteredOrders = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return transfers;
-    return transfers.filter((transfer) =>
+    if (!query) return orders;
+    return orders.filter((order) =>
       TABLE_COLUMNS.some((column) =>
-        String(formatValue(transfer[column.key])).toLowerCase().includes(query)
+        String(formatValue(order[column.key])).toLowerCase().includes(query)
       )
     );
-  }, [search, transfers]);
+  }, [orders, search]);
 
   useEffect(() => {
-    dispatch(fetchFundTransfers())
+    dispatch(fetchConvertOrders())
       .unwrap()
       .catch((err) =>
-        showError(
-          typeof err === 'string' ? err : 'Failed to fetch fund transfer records'
-        )
+        showError(typeof err === 'string' ? err : 'Failed to fetch convert orders')
       );
   }, [dispatch]);
 
   const retryFetch = () => {
-    dispatch(fetchFundTransfers())
+    dispatch(fetchConvertOrders())
       .unwrap()
       .catch((err) =>
-        showError(
-          typeof err === 'string' ? err : 'Failed to fetch fund transfer records'
-        )
+        showError(typeof err === 'string' ? err : 'Failed to fetch convert orders')
       );
   };
 
   const closeEditModal = () => {
     setIsEditOpen(false);
-    setSelectedTransfer(null);
+    setSelectedOrder(null);
     setEditForm({});
   };
 
-  const openEditModal = (transfer) => {
-    if (!transfer) return;
-    dispatch(clearFundTransferActionError());
-    setSelectedTransfer(transfer);
+  const openEditModal = (order) => {
+    if (!order) return;
+    dispatch(clearConvertOrderActionError());
+    setSelectedOrder(order);
     const initialForm = EDITABLE_KEYS.reduce((acc, key) => {
-      acc[key] = toInputString(transfer[key]);
+      acc[key] = toInputString(order[key]);
       return acc;
     }, {});
     setEditForm(initialForm);
@@ -176,43 +168,39 @@ const FundTransfersPage = () => {
   };
 
   const handleEditSave = async () => {
-    if (!selectedTransfer) return;
-    const actionId = getActionId(selectedTransfer);
+    if (!selectedOrder) return;
+    const actionId = getActionId(selectedOrder);
     if (!actionId) {
-      showError('Fund transfer identifier is missing');
+      showError('Convert order identifier is missing');
       return;
     }
-    dispatch(clearFundTransferActionError());
+    dispatch(clearConvertOrderActionError());
     try {
       const payload = Object.entries(editForm).reduce((acc, [key, value]) => {
         acc[key] = parseEditValue(key, value);
         return acc;
       }, {});
-      await dispatch(updateFundTransfer({ id: actionId, payload })).unwrap();
-      showSuccess('Fund transfer updated');
+      await dispatch(updateConvertOrder({ id: actionId, payload })).unwrap();
+      showSuccess('Convert order updated');
       closeEditModal();
     } catch (err) {
-      showError(
-        typeof err === 'string' ? err : 'Failed to update fund transfer record'
-      );
+      showError(typeof err === 'string' ? err : 'Failed to update convert order');
     }
   };
 
-  const handleDelete = async (transfer) => {
-    const actionId = getActionId(transfer);
+  const handleDelete = async (order) => {
+    const actionId = getActionId(order);
     if (!actionId) {
-      showError('Fund transfer identifier is missing');
+      showError('Convert order identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete fund transfer ${actionId}?`)) return;
-    dispatch(clearFundTransferActionError());
+    if (!window.confirm(`Delete convert order ${actionId}?`)) return;
+    dispatch(clearConvertOrderActionError());
     try {
-      await dispatch(deleteFundTransfer(actionId)).unwrap();
-      showSuccess('Fund transfer deleted');
+      await dispatch(deleteConvertOrder(actionId)).unwrap();
+      showSuccess('Convert order deleted');
     } catch (err) {
-      showError(
-        typeof err === 'string' ? err : 'Failed to delete fund transfer record'
-      );
+      showError(typeof err === 'string' ? err : 'Failed to delete convert order');
     }
   };
 
@@ -220,10 +208,10 @@ const FundTransfersPage = () => {
     <div className="space-y-5">
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-xl font-semibold text-white">Fund Transfers</h2>
+          <h2 className="text-xl font-semibold text-white">Convert Orders</h2>
           <input
             type="text"
-            placeholder="Search fund transfers..."
+            placeholder="Search convert orders..."
             className="input-dark w-full lg:max-w-md"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -231,7 +219,7 @@ const FundTransfersPage = () => {
         </div>
 
         {loading ? (
-          <p className="muted-text mt-6">Loading fund transfer records...</p>
+          <p className="muted-text mt-6">Loading convert orders...</p>
         ) : error ? (
           <div className="mt-6 flex items-center justify-between gap-3 text-red-400">
             <p>{error}</p>
@@ -254,42 +242,42 @@ const FundTransfersPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTransfers.length === 0 ? (
+                {filteredOrders.length === 0 ? (
                   <tr className="table-row">
                     <td
                       className="px-3 py-3 whitespace-nowrap"
                       colSpan={TABLE_COLUMNS.length + 2}
                     >
-                      No fund transfer records found.
+                      No convert orders found.
                     </td>
                   </tr>
                 ) : (
-                  filteredTransfers.map((transfer, index) => (
+                  filteredOrders.map((order, index) => (
                     <tr
-                      key={getActionId(transfer) || `transfer-row-${index}`}
+                      key={getActionId(order) || `convert-row-${index}`}
                       className="table-row"
                     >
                       <td className="px-3 py-2 whitespace-nowrap">{index + 1}</td>
                       {TABLE_COLUMNS.map((column) => (
                         <td
-                          key={`${getActionId(transfer)}-${column.key}`}
+                          key={`${getActionId(order)}-${column.key}`}
                           className="px-3 py-2 whitespace-nowrap"
                         >
-                          {formatValue(transfer[column.key])}
+                          {formatValue(order[column.key])}
                         </td>
                       ))}
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             className="button-ghost text-xs"
-                            onClick={() => openEditModal(transfer)}
+                            onClick={() => openEditModal(order)}
                             disabled={actionLoading}
                           >
                             Edit
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(transfer)}
+                            onClick={() => handleDelete(order)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -333,7 +321,7 @@ const FundTransfersPage = () => {
                 <Dialog.Panel className="w-full max-w-4xl max-h-[88vh] overflow-y-auto rounded-xl modal-panel p-6">
                   <div className="flex items-center justify-between gap-3">
                     <Dialog.Title className="text-lg font-semibold text-white">
-                      Edit Fund Transfer
+                      Edit Convert Order
                     </Dialog.Title>
                     <button
                       type="button"
@@ -346,11 +334,11 @@ const FundTransfersPage = () => {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {EDITABLE_KEYS.map((key) => (
-                      <div key={key} className={key === 'rawRequest' ? 'sm:col-span-2' : ''}>
+                      <div key={key} className={key === 'payload' ? 'sm:col-span-2' : ''}>
                         <label className="mb-1 block text-xs text-slate-300">
                           {formatLabel(key)}
                         </label>
-                        {key === 'rawRequest' ? (
+                        {key === 'payload' ? (
                           <textarea
                             rows={6}
                             className="input-dark w-full text-xs"
@@ -410,4 +398,4 @@ const FundTransfersPage = () => {
   );
 };
 
-export default FundTransfersPage;
+export default ConvertOrdersPage;

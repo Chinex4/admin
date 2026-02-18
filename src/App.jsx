@@ -25,6 +25,9 @@ import InstitutionalVerificationPage from './pages/dashboard/InstitutionalVerifi
 import P2POrdersPage from './pages/dashboard/P2POrdersPage';
 import P2PPage from './pages/dashboard/P2PPage';
 import FundTransfersPage from './pages/dashboard/FundTransfersPage';
+import ConvertOrdersPage from './pages/dashboard/ConvertOrdersPage';
+import ReferralsPage from './pages/dashboard/ReferralsPage';
+import NotificationsPage from './pages/dashboard/NotificationsPage';
 
 function App() {
 	return (
@@ -91,6 +94,18 @@ function App() {
 					<Route
 						path='viewFundTransfers'
 						element={<FundTransfersPage />}
+					/>
+					<Route
+						path='viewConvertOrders'
+						element={<ConvertOrdersPage />}
+					/>
+					<Route
+						path='viewReferrals'
+						element={<ReferralsPage />}
+					/>
+					<Route
+						path='viewNotifications'
+						element={<NotificationsPage />}
 					/>
 					<Route
 						path='viewTrades'

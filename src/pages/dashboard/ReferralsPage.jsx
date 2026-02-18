@@ -2,38 +2,29 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  deleteFundTransfer,
-  fetchFundTransfers,
-  updateFundTransfer,
-} from '../../redux/thunks/fundTransferThunk';
+  deleteReferral,
+  fetchReferrals,
+  updateReferral,
+} from '../../redux/thunks/referralThunk';
 import {
-  selectFundTransferActionError,
-  selectFundTransferActionLoading,
-  selectFundTransfers,
-  selectFundTransfersError,
-  selectFundTransfersLoading,
-} from '../../selectors/fundTransferSelectors';
-import { clearFundTransferActionError } from '../../slices/fundTransferSlice';
+  selectReferralActionError,
+  selectReferralActionLoading,
+  selectReferrals,
+  selectReferralsError,
+  selectReferralsLoading,
+} from '../../selectors/referralSelectors';
+import { clearReferralActionError } from '../../slices/referralSlice';
 import { showError, showSuccess } from '../../utils/toast';
 
 const TABLE_COLUMNS = [
   { key: 'id', label: 'ID' },
-  { key: 'transferId', label: 'Transfer ID' },
-  { key: 'userId', label: 'User ID' },
-  { key: 'fromAccount', label: 'From Account' },
-  { key: 'toAccount', label: 'To Account' },
-  { key: 'asset', label: 'Asset' },
-  { key: 'amount', label: 'Amount' },
-  { key: 'amountUsd', label: 'Amount (USD)' },
-  { key: 'coinQuantity', label: 'Coin Quantity' },
-  { key: 'spotAccountBefore', label: 'Spot Account Before' },
-  { key: 'spotAccountAfter', label: 'Spot Account After' },
-  { key: 'futureAccountBefore', label: 'Future Account Before' },
-  { key: 'futureAccountAfter', label: 'Future Account After' },
-  { key: 'totalAssetAfter', label: 'Total Asset After' },
+  { key: 'nameOfRefers', label: 'Name of Referrers' },
+  { key: 'referrerId', label: 'Referrer ID' },
+  { key: 'referredId', label: 'Referred ID' },
+  { key: 'referralId', label: 'Referral ID' },
+  { key: 'dateOfReferral', label: 'Date of Referral' },
+  { key: 'amtEarned', label: 'Amount Earned' },
   { key: 'status', label: 'Status' },
-  { key: 'rawRequest', label: 'Raw Request' },
-  { key: 'createdAt', label: 'Created At' },
 ];
 
 const EDITABLE_KEYS = TABLE_COLUMNS.map((column) => column.key).filter(
@@ -52,24 +43,15 @@ const toInputString = (value) => {
   return String(value);
 };
 
-const normalizeTransfer = (item = {}, index = 0) => ({
-  id: item?.id ?? item?.transferId ?? `row-${index}`,
-  transferId: item?.transferId ?? '',
-  userId: item?.userId ?? '',
-  fromAccount: item?.fromAccount ?? '',
-  toAccount: item?.toAccount ?? '',
-  asset: item?.asset ?? '',
-  amount: item?.amount ?? '',
-  amountUsd: item?.amountUsd ?? '',
-  coinQuantity: item?.coinQuantity ?? '',
-  spotAccountBefore: item?.spotAccountBefore ?? '',
-  spotAccountAfter: item?.spotAccountAfter ?? '',
-  futureAccountBefore: item?.futureAccountBefore ?? '',
-  futureAccountAfter: item?.futureAccountAfter ?? '',
-  totalAssetAfter: item?.totalAssetAfter ?? '',
+const normalizeReferral = (item = {}, index = 0) => ({
+  id: item?.id ?? item?.referralId ?? `row-${index}`,
+  nameOfRefers: item?.nameOfRefers ?? '',
+  referrerId: item?.referrerId ?? '',
+  referredId: item?.referredId ?? '',
+  referralId: item?.referralId ?? '',
+  dateOfReferral: item?.dateOfReferral ?? '',
+  amtEarned: item?.amtEarned ?? '',
   status: item?.status ?? '',
-  rawRequest: item?.rawRequest ?? '',
-  createdAt: item?.createdAt ?? '',
 });
 
 const formatValue = (value) => {
@@ -86,21 +68,10 @@ const formatValue = (value) => {
   return stringValue === '' ? '-' : stringValue;
 };
 
-const parseEditValue = (key, value) => {
-  const trimmed = String(value ?? '').trim();
-  if (trimmed === '') return '';
-  if (key === 'rawRequest') {
-    try {
-      return JSON.parse(trimmed);
-    } catch {
-      return trimmed;
-    }
-  }
-  return trimmed;
-};
+const parseEditValue = (value) => String(value ?? '').trim();
 
-const getActionId = (transfer) => {
-  const value = transfer?.id ?? transfer?.transferId;
+const getActionId = (item) => {
+  const value = item?.id ?? item?.referralId;
   return value === null || value === undefined ? '' : String(value).trim();
 };
 
@@ -109,66 +80,66 @@ const formatLabel = (key) =>
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (char) => char.toUpperCase());
 
-const FundTransfersPage = () => {
+const ReferralsPage = () => {
   const dispatch = useDispatch();
-  const list = useSelector(selectFundTransfers);
-  const loading = useSelector(selectFundTransfersLoading);
-  const error = useSelector(selectFundTransfersError);
-  const actionLoading = useSelector(selectFundTransferActionLoading);
-  const actionError = useSelector(selectFundTransferActionError);
+  const list = useSelector(selectReferrals);
+  const loading = useSelector(selectReferralsLoading);
+  const error = useSelector(selectReferralsError);
+  const actionLoading = useSelector(selectReferralActionLoading);
+  const actionError = useSelector(selectReferralActionError);
 
   const [search, setSearch] = useState('');
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedTransfer, setSelectedTransfer] = useState(null);
+  const [selectedReferral, setSelectedReferral] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  const transfers = useMemo(
-    () => list.map((item, index) => normalizeTransfer(item, index)),
+  const referrals = useMemo(
+    () => list.map((item, index) => normalizeReferral(item, index)),
     [list]
   );
 
-  const filteredTransfers = useMemo(() => {
+  const filteredReferrals = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return transfers;
-    return transfers.filter((transfer) =>
+    if (!query) return referrals;
+    return referrals.filter((item) =>
       TABLE_COLUMNS.some((column) =>
-        String(formatValue(transfer[column.key])).toLowerCase().includes(query)
+        String(formatValue(item[column.key])).toLowerCase().includes(query)
       )
     );
-  }, [search, transfers]);
+  }, [referrals, search]);
 
   useEffect(() => {
-    dispatch(fetchFundTransfers())
+    dispatch(fetchReferrals())
       .unwrap()
       .catch((err) =>
         showError(
-          typeof err === 'string' ? err : 'Failed to fetch fund transfer records'
+          typeof err === 'string' ? err : 'Failed to fetch referral records'
         )
       );
   }, [dispatch]);
 
   const retryFetch = () => {
-    dispatch(fetchFundTransfers())
+    dispatch(fetchReferrals())
       .unwrap()
       .catch((err) =>
         showError(
-          typeof err === 'string' ? err : 'Failed to fetch fund transfer records'
+          typeof err === 'string' ? err : 'Failed to fetch referral records'
         )
       );
   };
 
   const closeEditModal = () => {
     setIsEditOpen(false);
-    setSelectedTransfer(null);
+    setSelectedReferral(null);
     setEditForm({});
   };
 
-  const openEditModal = (transfer) => {
-    if (!transfer) return;
-    dispatch(clearFundTransferActionError());
-    setSelectedTransfer(transfer);
+  const openEditModal = (item) => {
+    if (!item) return;
+    dispatch(clearReferralActionError());
+    setSelectedReferral(item);
     const initialForm = EDITABLE_KEYS.reduce((acc, key) => {
-      acc[key] = toInputString(transfer[key]);
+      acc[key] = toInputString(item[key]);
       return acc;
     }, {});
     setEditForm(initialForm);
@@ -176,42 +147,42 @@ const FundTransfersPage = () => {
   };
 
   const handleEditSave = async () => {
-    if (!selectedTransfer) return;
-    const actionId = getActionId(selectedTransfer);
+    if (!selectedReferral) return;
+    const actionId = getActionId(selectedReferral);
     if (!actionId) {
-      showError('Fund transfer identifier is missing');
+      showError('Referral identifier is missing');
       return;
     }
-    dispatch(clearFundTransferActionError());
+    dispatch(clearReferralActionError());
     try {
       const payload = Object.entries(editForm).reduce((acc, [key, value]) => {
-        acc[key] = parseEditValue(key, value);
+        acc[key] = parseEditValue(value);
         return acc;
       }, {});
-      await dispatch(updateFundTransfer({ id: actionId, payload })).unwrap();
-      showSuccess('Fund transfer updated');
+      await dispatch(updateReferral({ id: actionId, payload })).unwrap();
+      showSuccess('Referral record updated');
       closeEditModal();
     } catch (err) {
       showError(
-        typeof err === 'string' ? err : 'Failed to update fund transfer record'
+        typeof err === 'string' ? err : 'Failed to update referral record'
       );
     }
   };
 
-  const handleDelete = async (transfer) => {
-    const actionId = getActionId(transfer);
+  const handleDelete = async (item) => {
+    const actionId = getActionId(item);
     if (!actionId) {
-      showError('Fund transfer identifier is missing');
+      showError('Referral identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete fund transfer ${actionId}?`)) return;
-    dispatch(clearFundTransferActionError());
+    if (!window.confirm(`Delete referral ${actionId}?`)) return;
+    dispatch(clearReferralActionError());
     try {
-      await dispatch(deleteFundTransfer(actionId)).unwrap();
-      showSuccess('Fund transfer deleted');
+      await dispatch(deleteReferral(actionId)).unwrap();
+      showSuccess('Referral record deleted');
     } catch (err) {
       showError(
-        typeof err === 'string' ? err : 'Failed to delete fund transfer record'
+        typeof err === 'string' ? err : 'Failed to delete referral record'
       );
     }
   };
@@ -220,10 +191,10 @@ const FundTransfersPage = () => {
     <div className="space-y-5">
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-xl font-semibold text-white">Fund Transfers</h2>
+          <h2 className="text-xl font-semibold text-white">Referral Table</h2>
           <input
             type="text"
-            placeholder="Search fund transfers..."
+            placeholder="Search referral records..."
             className="input-dark w-full lg:max-w-md"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -231,7 +202,7 @@ const FundTransfersPage = () => {
         </div>
 
         {loading ? (
-          <p className="muted-text mt-6">Loading fund transfer records...</p>
+          <p className="muted-text mt-6">Loading referral records...</p>
         ) : error ? (
           <div className="mt-6 flex items-center justify-between gap-3 text-red-400">
             <p>{error}</p>
@@ -254,42 +225,42 @@ const FundTransfersPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTransfers.length === 0 ? (
+                {filteredReferrals.length === 0 ? (
                   <tr className="table-row">
                     <td
                       className="px-3 py-3 whitespace-nowrap"
                       colSpan={TABLE_COLUMNS.length + 2}
                     >
-                      No fund transfer records found.
+                      No referral records found.
                     </td>
                   </tr>
                 ) : (
-                  filteredTransfers.map((transfer, index) => (
+                  filteredReferrals.map((item, index) => (
                     <tr
-                      key={getActionId(transfer) || `transfer-row-${index}`}
+                      key={getActionId(item) || `referral-row-${index}`}
                       className="table-row"
                     >
                       <td className="px-3 py-2 whitespace-nowrap">{index + 1}</td>
                       {TABLE_COLUMNS.map((column) => (
                         <td
-                          key={`${getActionId(transfer)}-${column.key}`}
+                          key={`${getActionId(item)}-${column.key}`}
                           className="px-3 py-2 whitespace-nowrap"
                         >
-                          {formatValue(transfer[column.key])}
+                          {formatValue(item[column.key])}
                         </td>
                       ))}
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             className="button-ghost text-xs"
-                            onClick={() => openEditModal(transfer)}
+                            onClick={() => openEditModal(item)}
                             disabled={actionLoading}
                           >
                             Edit
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(transfer)}
+                            onClick={() => handleDelete(item)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -333,7 +304,7 @@ const FundTransfersPage = () => {
                 <Dialog.Panel className="w-full max-w-4xl max-h-[88vh] overflow-y-auto rounded-xl modal-panel p-6">
                   <div className="flex items-center justify-between gap-3">
                     <Dialog.Title className="text-lg font-semibold text-white">
-                      Edit Fund Transfer
+                      Edit Referral
                     </Dialog.Title>
                     <button
                       type="button"
@@ -346,35 +317,21 @@ const FundTransfersPage = () => {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {EDITABLE_KEYS.map((key) => (
-                      <div key={key} className={key === 'rawRequest' ? 'sm:col-span-2' : ''}>
+                      <div key={key}>
                         <label className="mb-1 block text-xs text-slate-300">
                           {formatLabel(key)}
                         </label>
-                        {key === 'rawRequest' ? (
-                          <textarea
-                            rows={6}
-                            className="input-dark w-full text-xs"
-                            value={editForm[key] ?? ''}
-                            onChange={(event) =>
-                              setEditForm((prev) => ({
-                                ...prev,
-                                [key]: event.target.value,
-                              }))
-                            }
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            className="input-dark w-full text-xs"
-                            value={editForm[key] ?? ''}
-                            onChange={(event) =>
-                              setEditForm((prev) => ({
-                                ...prev,
-                                [key]: event.target.value,
-                              }))
-                            }
-                          />
-                        )}
+                        <input
+                          type="text"
+                          className="input-dark w-full text-xs"
+                          value={editForm[key] ?? ''}
+                          onChange={(event) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              [key]: event.target.value,
+                            }))
+                          }
+                        />
                       </div>
                     ))}
                   </div>
@@ -410,4 +367,4 @@ const FundTransfersPage = () => {
   );
 };
 
-export default FundTransfersPage;
+export default ReferralsPage;

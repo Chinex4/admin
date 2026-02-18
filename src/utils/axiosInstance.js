@@ -6,7 +6,7 @@ import axios from 'axios';
 //   'https://api.bitspotexchange.com/api/task/';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://127.0.0.1/cashtradeproApi/api/task/';
+  'http://10.86.132.204/backend/api/task/';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
