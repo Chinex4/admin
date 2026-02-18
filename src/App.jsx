@@ -24,6 +24,7 @@ import AdvancedKYCPage from './pages/dashboard/AdvancedKYCPage';
 import InstitutionalVerificationPage from './pages/dashboard/InstitutionalVerificationPage';
 import P2POrdersPage from './pages/dashboard/P2POrdersPage';
 import P2PPage from './pages/dashboard/P2PPage';
+import FundTransfersPage from './pages/dashboard/FundTransfersPage';
 
 function App() {
 	return (
@@ -86,6 +87,10 @@ function App() {
 					<Route
 						path='viewLosses'
 						element={<LossesPage />}
+					/>
+					<Route
+						path='viewFundTransfers'
+						element={<FundTransfersPage />}
 					/>
 					<Route
 						path='viewTrades'

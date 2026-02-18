@@ -26,6 +26,14 @@ const items = [
     ],
   },
   {
+    icon: 'bi-arrow-left-right',
+    label: 'Fund Transfers',
+    routes: ['/dashboard/viewFundTransfers'],
+    children: [
+      { to: '/dashboard/viewFundTransfers', text: 'View Fund Transfers' },
+    ],
+  },
+  {
     icon: 'bi-graph-up',
     label: 'Trade Table',
     routes: ['/dashboard/viewTrades'],
