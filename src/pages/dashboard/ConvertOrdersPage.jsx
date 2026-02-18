@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
+import DashboardCards from '../../components/dashboard/DashboardCards';
 import {
   deleteConvertOrder,
   fetchConvertOrders,
   updateConvertOrder,
 } from '../../redux/thunks/convertOrderThunk';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
 import {
   selectConvertOrderActionError,
   selectConvertOrderActionLoading,
@@ -117,6 +119,7 @@ const ConvertOrdersPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [orderToDelete, setOrderToDelete] = useState(null);
 
   const orders = useMemo(
     () => list.map((item, index) => normalizeOrder(item, index)),
@@ -132,6 +135,14 @@ const ConvertOrdersPage = () => {
       )
     );
   }, [orders, search]);
+
+  const convertOrderCards = [
+    {
+      label: 'Total Convert Orders',
+      value: loading ? '...' : orders.length,
+      icon: <i className="bi bi-arrow-repeat text-3xl" />,
+    },
+  ];
 
   useEffect(() => {
     dispatch(fetchConvertOrders())
@@ -188,17 +199,32 @@ const ConvertOrdersPage = () => {
     }
   };
 
-  const handleDelete = async (order) => {
+  const openDeleteModal = (order) => {
     const actionId = getActionId(order);
     if (!actionId) {
       showError('Convert order identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete convert order ${actionId}?`)) return;
+    dispatch(clearConvertOrderActionError());
+    setOrderToDelete(order);
+  };
+
+  const closeDeleteModal = () => {
+    if (actionLoading) return;
+    setOrderToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    const actionId = getActionId(orderToDelete);
+    if (!actionId) {
+      showError('Convert order identifier is missing');
+      return;
+    }
     dispatch(clearConvertOrderActionError());
     try {
       await dispatch(deleteConvertOrder(actionId)).unwrap();
       showSuccess('Convert order deleted');
+      setOrderToDelete(null);
     } catch (err) {
       showError(typeof err === 'string' ? err : 'Failed to delete convert order');
     }
@@ -206,6 +232,8 @@ const ConvertOrdersPage = () => {
 
   return (
     <div className="space-y-5">
+      <DashboardCards cardData={convertOrderCards} centerSingleCard />
+
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-xl font-semibold text-white">Convert Orders</h2>
@@ -277,7 +305,7 @@ const ConvertOrdersPage = () => {
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(order)}
+                            onClick={() => openDeleteModal(order)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -394,6 +422,16 @@ const ConvertOrdersPage = () => {
           </div>
         </Dialog>
       </Transition>
+
+      <ConfirmDeleteModal
+        isOpen={Boolean(orderToDelete)}
+        title="Delete Convert Order"
+        message={`Are you sure you want to delete convert order ${getActionId(orderToDelete)}? This action cannot be undone.`}
+        confirmLabel="Delete Order"
+        isLoading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
+import DashboardCards from '../../components/dashboard/DashboardCards';
 import {
   deleteReferral,
   fetchReferrals,
   updateReferral,
 } from '../../redux/thunks/referralThunk';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
 import {
   selectReferralActionError,
   selectReferralActionLoading,
@@ -92,6 +94,7 @@ const ReferralsPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedReferral, setSelectedReferral] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [referralToDelete, setReferralToDelete] = useState(null);
 
   const referrals = useMemo(
     () => list.map((item, index) => normalizeReferral(item, index)),
@@ -107,6 +110,14 @@ const ReferralsPage = () => {
       )
     );
   }, [referrals, search]);
+
+  const referralCards = [
+    {
+      label: 'Total Referrals',
+      value: loading ? '...' : referrals.length,
+      icon: <i className="bi bi-people text-3xl" />,
+    },
+  ];
 
   useEffect(() => {
     dispatch(fetchReferrals())
@@ -169,17 +180,32 @@ const ReferralsPage = () => {
     }
   };
 
-  const handleDelete = async (item) => {
+  const openDeleteModal = (item) => {
     const actionId = getActionId(item);
     if (!actionId) {
       showError('Referral identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete referral ${actionId}?`)) return;
+    dispatch(clearReferralActionError());
+    setReferralToDelete(item);
+  };
+
+  const closeDeleteModal = () => {
+    if (actionLoading) return;
+    setReferralToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    const actionId = getActionId(referralToDelete);
+    if (!actionId) {
+      showError('Referral identifier is missing');
+      return;
+    }
     dispatch(clearReferralActionError());
     try {
       await dispatch(deleteReferral(actionId)).unwrap();
       showSuccess('Referral record deleted');
+      setReferralToDelete(null);
     } catch (err) {
       showError(
         typeof err === 'string' ? err : 'Failed to delete referral record'
@@ -189,6 +215,8 @@ const ReferralsPage = () => {
 
   return (
     <div className="space-y-5">
+      <DashboardCards cardData={referralCards} centerSingleCard />
+
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-xl font-semibold text-white">Referral Table</h2>
@@ -260,7 +288,7 @@ const ReferralsPage = () => {
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => openDeleteModal(item)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -363,6 +391,16 @@ const ReferralsPage = () => {
           </div>
         </Dialog>
       </Transition>
+
+      <ConfirmDeleteModal
+        isOpen={Boolean(referralToDelete)}
+        title="Delete Referral"
+        message={`Are you sure you want to delete referral ${getActionId(referralToDelete)}? This action cannot be undone.`}
+        confirmLabel="Delete Referral"
+        isLoading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

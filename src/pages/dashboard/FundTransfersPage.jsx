@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
+import DashboardCards from '../../components/dashboard/DashboardCards';
 import {
   deleteFundTransfer,
   fetchFundTransfers,
   updateFundTransfer,
 } from '../../redux/thunks/fundTransferThunk';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
 import {
   selectFundTransferActionError,
   selectFundTransferActionLoading,
@@ -121,6 +123,7 @@ const FundTransfersPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [transferToDelete, setTransferToDelete] = useState(null);
 
   const transfers = useMemo(
     () => list.map((item, index) => normalizeTransfer(item, index)),
@@ -136,6 +139,14 @@ const FundTransfersPage = () => {
       )
     );
   }, [search, transfers]);
+
+  const fundTransferCards = [
+    {
+      label: 'Total Fund Transfers',
+      value: loading ? '...' : transfers.length,
+      icon: <i className="bi bi-arrow-left-right text-3xl" />,
+    },
+  ];
 
   useEffect(() => {
     dispatch(fetchFundTransfers())
@@ -198,17 +209,32 @@ const FundTransfersPage = () => {
     }
   };
 
-  const handleDelete = async (transfer) => {
+  const openDeleteModal = (transfer) => {
     const actionId = getActionId(transfer);
     if (!actionId) {
       showError('Fund transfer identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete fund transfer ${actionId}?`)) return;
+    dispatch(clearFundTransferActionError());
+    setTransferToDelete(transfer);
+  };
+
+  const closeDeleteModal = () => {
+    if (actionLoading) return;
+    setTransferToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    const actionId = getActionId(transferToDelete);
+    if (!actionId) {
+      showError('Fund transfer identifier is missing');
+      return;
+    }
     dispatch(clearFundTransferActionError());
     try {
       await dispatch(deleteFundTransfer(actionId)).unwrap();
       showSuccess('Fund transfer deleted');
+      setTransferToDelete(null);
     } catch (err) {
       showError(
         typeof err === 'string' ? err : 'Failed to delete fund transfer record'
@@ -218,6 +244,8 @@ const FundTransfersPage = () => {
 
   return (
     <div className="space-y-5">
+      <DashboardCards cardData={fundTransferCards} centerSingleCard />
+
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-xl font-semibold text-white">Fund Transfers</h2>
@@ -289,7 +317,7 @@ const FundTransfersPage = () => {
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(transfer)}
+                            onClick={() => openDeleteModal(transfer)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -406,6 +434,16 @@ const FundTransfersPage = () => {
           </div>
         </Dialog>
       </Transition>
+
+      <ConfirmDeleteModal
+        isOpen={Boolean(transferToDelete)}
+        title="Delete Fund Transfer"
+        message={`Are you sure you want to delete fund transfer ${getActionId(transferToDelete)}? This action cannot be undone.`}
+        confirmLabel="Delete Transfer"
+        isLoading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };
