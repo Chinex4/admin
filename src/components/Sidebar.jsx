@@ -26,6 +26,34 @@ const items = [
     ],
   },
   {
+    icon: 'bi-arrow-left-right',
+    label: 'Fund Transfers',
+    routes: ['/dashboard/viewFundTransfers'],
+    children: [
+      { to: '/dashboard/viewFundTransfers', text: 'View Fund Transfers' },
+    ],
+  },
+  {
+    icon: 'bi-shuffle',
+    label: 'Convert Orders',
+    routes: ['/dashboard/viewConvertOrders'],
+    children: [
+      { to: '/dashboard/viewConvertOrders', text: 'View Convert Orders' },
+    ],
+  },
+  {
+    icon: 'bi-diagram-3',
+    label: 'Referral Table',
+    routes: ['/dashboard/viewReferrals'],
+    children: [{ to: '/dashboard/viewReferrals', text: 'View Referrals' }],
+  },
+  {
+    icon: 'bi-bell',
+    label: 'Notifications',
+    routes: ['/dashboard/viewNotifications'],
+    children: [{ to: '/dashboard/viewNotifications', text: 'View Notifications' }],
+  },
+  {
     icon: 'bi-graph-up',
     label: 'Trade Table',
     routes: ['/dashboard/viewTrades'],
