@@ -1,12 +1,12 @@
 // src/utils/axiosInstance.js
 import axios from 'axios';
 
-// const API_BASE_URL =
-//   import.meta.env.VITE_API_BASE_URL ||
-//   'https://api.bitspotexchange.com/api/task/';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://127.0.0.1/cashtradeproApi/api/task/';
+  'https://api.bitspotexchange.com/api/task/';
+// const API_BASE_URL =
+//   import.meta.env.VITE_API_BASE_URL ||
+//   'http://127.0.0.1/cashtradeproApi/api/task/';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
