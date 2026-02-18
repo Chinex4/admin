@@ -4,18 +4,6 @@ import axiosInstance from '../../utils/axiosInstance';
 const getErrorMessage = (error, fallback) =>
   error?.response?.data?.message || error?.message || fallback;
 
-const runWithFallback = async (requests) => {
-  let lastError;
-  for (const request of requests) {
-    try {
-      return await request();
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError;
-};
-
 const extractPayload = (res) => res?.data?.message ?? res?.data ?? {};
 
 const normalizeListPayload = (payload) => {
@@ -31,12 +19,7 @@ export const fetchFundTransfers = createAsyncThunk(
   'fundTransfers/fetch',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await runWithFallback([
-        () => axiosInstance.get('admin/fundTransfers'),
-        () => axiosInstance.get('admin/fundTransfer'),
-        () => axiosInstance.get('admin/fetchFundTransfer'),
-        () => axiosInstance.get('admin/fetchFundTransfers'),
-      ]);
+      const res = await axiosInstance.get('admin/fundTransfers');
       return normalizeListPayload(extractPayload(res));
     } catch (error) {
       return rejectWithValue(
@@ -50,12 +33,7 @@ export const updateFundTransfer = createAsyncThunk(
   'fundTransfers/update',
   async ({ id, payload }, { rejectWithValue }) => {
     try {
-      const res = await runWithFallback([
-        () => axiosInstance.put(`admin/fundTransfers/${id}`, payload),
-        () => axiosInstance.put(`admin/fundTransfer/${id}`, payload),
-        () => axiosInstance.put(`admin/updateFundTransfer/${id}`, payload),
-        () => axiosInstance.put(`admin/editFundTransfer/${id}`, payload),
-      ]);
+      const res = await axiosInstance.put(`admin/fundTransfers/${id}`, payload);
       return {
         id: String(id),
         payload,
@@ -73,11 +51,7 @@ export const deleteFundTransfer = createAsyncThunk(
   'fundTransfers/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await runWithFallback([
-        () => axiosInstance.delete(`admin/fundTransfers/${id}`),
-        () => axiosInstance.delete(`admin/fundTransfer/${id}`),
-        () => axiosInstance.delete(`admin/deleteFundTransfer/${id}`),
-      ]);
+      await axiosInstance.delete(`admin/fundTransfers/${id}`);
       return String(id);
     } catch (error) {
       return rejectWithValue(

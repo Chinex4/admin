@@ -192,6 +192,12 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   }
 
+  .modal-panel {
+    background-color: #111822;
+    border: 1px solid var(--color-stroke);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+  }
+
   .icon-button {
     display: inline-flex;
     align-items: center;

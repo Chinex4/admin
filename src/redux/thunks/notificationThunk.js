@@ -4,18 +4,6 @@ import axiosInstance from '../../utils/axiosInstance';
 const getErrorMessage = (error, fallback) =>
   error?.response?.data?.message || error?.message || fallback;
 
-const runWithFallback = async (requests) => {
-  let lastError;
-  for (const request of requests) {
-    try {
-      return await request();
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError;
-};
-
 const extractPayload = (res) => res?.data?.message ?? res?.data ?? {};
 
 const normalizeListPayload = (payload) => {
@@ -31,12 +19,7 @@ export const fetchNotifications = createAsyncThunk(
   'notifications/fetch',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await runWithFallback([
-        () => axiosInstance.get('admin/notifications'),
-        () => axiosInstance.get('admin/notification'),
-        () => axiosInstance.get('admin/fetchNotification'),
-        () => axiosInstance.get('admin/fetchNotifications'),
-      ]);
+      const res = await axiosInstance.get('admin/notifications');
       return normalizeListPayload(extractPayload(res));
     } catch (error) {
       return rejectWithValue(
@@ -50,11 +33,7 @@ export const createNotification = createAsyncThunk(
   'notifications/create',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await runWithFallback([
-        () => axiosInstance.post('admin/notifications', payload),
-        () => axiosInstance.post('admin/notification', payload),
-        () => axiosInstance.post('admin/createNotification', payload),
-      ]);
+      const res = await axiosInstance.post('admin/notifications', payload);
       return extractPayload(res);
     } catch (error) {
       return rejectWithValue(
@@ -68,12 +47,7 @@ export const updateNotification = createAsyncThunk(
   'notifications/update',
   async ({ id, payload }, { rejectWithValue }) => {
     try {
-      const res = await runWithFallback([
-        () => axiosInstance.put(`admin/notifications/${id}`, payload),
-        () => axiosInstance.put(`admin/notification/${id}`, payload),
-        () => axiosInstance.put(`admin/updateNotification/${id}`, payload),
-        () => axiosInstance.put(`admin/editNotification/${id}`, payload),
-      ]);
+      const res = await axiosInstance.put(`admin/notifications/${id}`, payload);
       return {
         id: String(id),
         payload,
@@ -91,11 +65,7 @@ export const deleteNotification = createAsyncThunk(
   'notifications/delete',
   async (id, { rejectWithValue }) => {
     try {
-      await runWithFallback([
-        () => axiosInstance.delete(`admin/notifications/${id}`),
-        () => axiosInstance.delete(`admin/notification/${id}`),
-        () => axiosInstance.delete(`admin/deleteNotification/${id}`),
-      ]);
+      await axiosInstance.delete(`admin/notifications/${id}`);
       return String(id);
     } catch (error) {
       return rejectWithValue(

@@ -1,12 +1,14 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
+import DashboardCards from '../../components/dashboard/DashboardCards';
 import {
   createNotification,
   deleteNotification,
   fetchNotifications,
   updateNotification,
 } from '../../redux/thunks/notificationThunk';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
 import {
   selectNotificationActionError,
   selectNotificationActionLoading,
@@ -55,6 +57,7 @@ const NotificationsPage = () => {
   const [mode, setMode] = useState('create');
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [form, setForm] = useState({ title: '', body: '' });
+  const [notificationToDelete, setNotificationToDelete] = useState(null);
 
   const notifications = useMemo(
     () => list.map((item, index) => normalizeNotification(item, index)),
@@ -68,6 +71,14 @@ const NotificationsPage = () => {
       [item.title, item.body, item.createdAt].join(' ').toLowerCase().includes(query)
     );
   }, [notifications, search]);
+
+  const notificationCards = [
+    {
+      label: 'Total Notifications',
+      value: loading ? '...' : notifications.length,
+      icon: <i className="bi bi-bell text-3xl" />,
+    },
+  ];
 
   useEffect(() => {
     dispatch(fetchNotifications())
@@ -148,17 +159,32 @@ const NotificationsPage = () => {
     }
   };
 
-  const handleDelete = async (item) => {
+  const openDeleteModal = (item) => {
     const actionId = getActionId(item);
     if (!actionId) {
       showError('Notification identifier is missing');
       return;
     }
-    if (!window.confirm(`Delete notification ${actionId}?`)) return;
+    dispatch(clearNotificationActionError());
+    setNotificationToDelete(item);
+  };
+
+  const closeDeleteModal = () => {
+    if (actionLoading) return;
+    setNotificationToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    const actionId = getActionId(notificationToDelete);
+    if (!actionId) {
+      showError('Notification identifier is missing');
+      return;
+    }
     dispatch(clearNotificationActionError());
     try {
       await dispatch(deleteNotification(actionId)).unwrap();
       showSuccess('Notification deleted');
+      setNotificationToDelete(null);
     } catch (err) {
       showError(typeof err === 'string' ? err : 'Failed to delete notification');
     }
@@ -166,6 +192,8 @@ const NotificationsPage = () => {
 
   return (
     <div className="space-y-5">
+      <DashboardCards cardData={notificationCards} centerSingleCard />
+
       <div className="panel panel-pad">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-xl font-semibold text-white">Notifications</h2>
@@ -242,7 +270,7 @@ const NotificationsPage = () => {
                           </button>
                           <button
                             className="button-ghost text-xs text-rose-300"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => openDeleteModal(item)}
                             disabled={actionLoading}
                           >
                             Delete
@@ -355,6 +383,16 @@ const NotificationsPage = () => {
           </div>
         </Dialog>
       </Transition>
+
+      <ConfirmDeleteModal
+        isOpen={Boolean(notificationToDelete)}
+        title="Delete Notification"
+        message={`Are you sure you want to delete notification ${getActionId(notificationToDelete)}? This action cannot be undone.`}
+        confirmLabel="Delete Notification"
+        isLoading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };
