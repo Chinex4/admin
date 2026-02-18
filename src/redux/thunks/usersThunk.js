@@ -25,8 +25,8 @@ export const deleteUser = createAsyncThunk(
 	'admin/deleteUser',
 	async (userId, { rejectWithValue }) => {
 		try {
-			await axiosInstance.delete(`admin/deleteUser/${userId}`);
-			return userId;
+			const res = await axiosInstance.delete(`admin/deleteUser/${userId}`);
+			return res;
 		} catch (err) {
 			return rejectWithValue(
 				err.response?.data?.message || 'Failed to delete user'
@@ -165,6 +165,60 @@ export const updateUserBalances = createAsyncThunk(
 		} catch (err) {
 			return rejectWithValue(
 				err.response?.data?.message || 'Failed to update user balances'
+			);
+		}
+	}
+);
+
+// ✅ 12. Fund user account from admin modal
+export const fundUserAccount = createAsyncThunk(
+	'admin/fundUser',
+	async ({ accToken, ...payload }, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/fundUser/${accToken}`, payload);
+			return res;
+		} catch (err) {
+			return rejectWithValue(
+				err?.response?.data?.errors ||
+					err?.response?.data?.message ||
+					'Failed to fund user account'
+			);
+		}
+	}
+);
+
+// ✅ 13. Add profit to user's earn account and total asset
+export const addUserProfit = createAsyncThunk(
+	'admin/addUserProfit',
+	async ({ accToken, ...payload }, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(
+				`admin/addUserProfit/${accToken}`,
+				payload
+			);
+			return res;
+		} catch (err) {
+			return rejectWithValue(
+				err?.response?.data?.errors ||
+					err?.response?.data?.message ||
+					'Failed to add profit'
+			);
+		}
+	}
+);
+
+// ✅ 14. Apply loss to user's earn account and total asset
+export const addUserLoss = createAsyncThunk(
+	'admin/addUserLoss',
+	async ({ accToken, ...payload }, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/addUserLoss/${accToken}`, payload);
+			return res;
+		} catch (err) {
+			return rejectWithValue(
+				err?.response?.data?.errors ||
+					err?.response?.data?.message ||
+					'Failed to apply loss'
 			);
 		}
 	}

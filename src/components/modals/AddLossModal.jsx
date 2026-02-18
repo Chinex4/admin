@@ -3,18 +3,50 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fragment } from 'react';
 import { clearModal } from '../../slices/userSlice';
+import { addUserLoss } from '../../redux/thunks/usersThunk';
+import { fetchUsers } from '../../slices/fetchSlice';
+import { showError, showPromise } from '../../utils/toast';
 
 const AddLossModal = () => {
 	const { selectedUser } = useSelector((state) => state.users);
 	const dispatch = useDispatch();
 	const [loss, setLoss] = useState('');
+	const [note, setNote] = useState('');
 
 	const handleAdd = () => {
-		const updatedProfit = (
-			parseFloat(selectedUser.profit || 0) - parseFloat(loss)
-		).toFixed(2);
-		// dispatch(updateUser({ ...selectedUser, profit: updatedProfit }));
-		dispatch(clearModal());
+		const amount = Number(loss);
+		if (!selectedUser?.accToken) {
+			showError('No selected user');
+			return;
+		}
+		if (!Number.isFinite(amount) || amount <= 0) {
+			showError('Enter a valid loss amount');
+			return;
+		}
+
+		const promise = new Promise((resolve, reject) => {
+			dispatch(
+				addUserLoss({
+					accToken: selectedUser.accToken,
+					amount: String(amount),
+					note: note.trim(),
+				})
+			)
+				.unwrap()
+				.then((res) => {
+					dispatch(fetchUsers());
+					dispatch(clearModal());
+					resolve(res);
+				})
+				.catch((err) => reject(err));
+		});
+
+		showPromise(promise, {
+			loading: 'Applying loss...',
+			success: (res) =>
+				res?.data?.message?.message || res?.data?.message || 'Loss applied',
+			error: (msg) => msg || 'Failed to apply loss',
+		});
 	};
 
 	return (
@@ -56,6 +88,13 @@ const AddLossModal = () => {
 									value={loss}
 									onChange={(e) => setLoss(e.target.value)}
 									className='input-dark'
+								/>
+								<textarea
+									rows='3'
+									placeholder='Optional note'
+									value={note}
+									onChange={(e) => setNote(e.target.value)}
+									className='input-dark mt-3'
 								/>
 								<div className='flex justify-end gap-3 mt-6'>
 									<button

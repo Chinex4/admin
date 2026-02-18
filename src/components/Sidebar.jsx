@@ -32,6 +32,12 @@ const items = [
     children: [{ to: '/dashboard/viewTrades', text: 'About Trade' }],
   },
   {
+    icon: 'bi-cash-stack',
+    label: 'Earning Table',
+    routes: ['/dashboard/viewTradeEarnings'],
+    children: [{ to: '/dashboard/viewTradeEarnings', text: 'Trade Earnings' }],
+  },
+  {
     icon: 'bi-wallet2',
     label: 'Wallet Table',
     routes: ['/dashboard/viewBrokersWallet'],

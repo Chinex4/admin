@@ -114,7 +114,7 @@ const UsersTable = () => {
     try {
       const parsed = JSON.parse(balancesJson);
       return Array.isArray(parsed) ? parsed : [];
-    } catch (err) {
+    } catch {
       return [];
     }
   };
@@ -226,7 +226,11 @@ const UsersTable = () => {
       dispatch(action(user.accToken))
         .unwrap()
         .then((res) => {
-          if (res?.status === 201) {
+          const status = res?.status;
+          const okStatus = typeof status === 'number' && status >= 200 && status < 300;
+          const okPrimitive =
+            typeof res === 'string' || typeof res === 'number' || res === true;
+          if (okStatus || okPrimitive) {
             setTimeout(() => {
               dispatch(fetchUsers());
               resolve(res);

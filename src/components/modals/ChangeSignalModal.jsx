@@ -3,15 +3,45 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fragment } from 'react';
 import { clearModal } from '../../slices/userSlice';
+import { updateUser } from '../../redux/thunks/usersThunk';
+import { fetchUsers } from '../../slices/fetchSlice';
+import { showError, showPromise } from '../../utils/toast';
 
 const ChangeSignalModal = () => {
 	const { selectedUser } = useSelector((state) => state.users);
 	const dispatch = useDispatch();
-	const [signalMsg, setSignalMsg] = useState(selectedUser.signalMsg || '');
+	const [signalMsg, setSignalMsg] = useState(
+		selectedUser?.SignalMessage || selectedUser?.signalMsg || ''
+	);
 
 	const handleSave = () => {
-		// dispatch(updateUser({ ...selectedUser, signalMsg }));
-		// dispatch(clearModal());
+		if (!selectedUser?.accToken) {
+			showError('No selected user');
+			return;
+		}
+
+		const promise = new Promise((resolve, reject) => {
+			dispatch(
+				updateUser({
+					accToken: selectedUser.accToken,
+					SignalMessage: signalMsg,
+				})
+			)
+				.unwrap()
+				.then((res) => {
+					dispatch(fetchUsers());
+					dispatch(clearModal());
+					resolve(res);
+				})
+				.catch((err) => reject(err));
+		});
+
+		showPromise(promise, {
+			loading: 'Updating signal message...',
+			success: (res) =>
+				res?.data?.message?.message || res?.data?.message || 'Signal updated',
+			error: (msg) => msg || 'Failed to update signal message',
+		});
 	};
 
 	return (

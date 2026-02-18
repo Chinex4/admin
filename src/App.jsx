@@ -8,6 +8,7 @@ import WithdrawPage from './pages/dashboard/WithdrawPage';
 import ProfitPage from './pages/dashboard/ProfitPage';
 import LossesPage from './pages/dashboard/LossesPage';
 import TradePage from './pages/dashboard/TradePage';
+import EarningsPage from './pages/dashboard/EarningsPage';
 import WalletPage from './pages/dashboard/WalletPage';
 import ProofPage from './pages/dashboard/ProofPage';
 import KYCPage from './pages/dashboard/KYCPage';
@@ -89,6 +90,10 @@ function App() {
 					<Route
 						path='viewTrades'
 						element={<TradePage />}
+					/>
+					<Route
+						path='viewTradeEarnings'
+						element={<EarningsPage />}
 					/>
 					<Route
 						path='viewBrokersWallet'

@@ -2,18 +2,40 @@ import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Fragment } from 'react';
-import { updateTradeOutcome, clearTradeModal } from '../../slices/tradeSlice';
+import {
+	clearTradeModal,
+	setTradeActionError,
+} from '../../slices/tradeSlice';
+import { showError } from '../../utils/toast';
+import { lossTradeOrder } from '../../redux/thunks/tradeActionsThunk';
 
 const LoseTradeModal = () => {
 	const dispatch = useDispatch();
-	const { selectedTrade } = useSelector((state) => state.trades);
+	const { selectedTrade, actionError, actionLoading } = useSelector((state) => state.trades);
 	const [amount, setAmount] = useState('');
 
-	const handleConfirm = () => {
-		dispatch(
-			updateTradeOutcome({ id: selectedTrade.id, outcome: `Lost: ${amount}` })
-		);
-		dispatch(clearTradeModal());
+	const handleConfirm = async () => {
+		const tradeId = selectedTrade?.orderId ?? selectedTrade?.id;
+		if (!tradeId) {
+			dispatch(setTradeActionError('No trade selected.'));
+			showError('No trade selected.');
+			return;
+		}
+		if (!String(amount).trim()) {
+			dispatch(setTradeActionError('Loss amount is required.'));
+			showError('Loss amount is required.');
+			return;
+		}
+		try {
+			await dispatch(
+				lossTradeOrder({ tradeId, amount: String(amount).trim() })
+			).unwrap();
+			dispatch(setTradeActionError(null));
+			dispatch(clearTradeModal());
+		} catch (err) {
+			dispatch(setTradeActionError(typeof err === 'string' ? err : 'Failed to mark trade as loss'));
+			showError(typeof err === 'string' ? err : 'Failed to mark trade as loss');
+		}
 	};
 
 	return (
@@ -56,6 +78,9 @@ const LoseTradeModal = () => {
 									placeholder='Enter amount'
 									className='input-dark mt-4'
 								/>
+								{actionError ? (
+									<p className='mt-2 text-xs text-red-400'>{actionError}</p>
+								) : null}
 								<div className='flex justify-end mt-6 gap-3'>
 									<button
 										onClick={() => dispatch(clearTradeModal())}
@@ -64,8 +89,9 @@ const LoseTradeModal = () => {
 									</button>
 									<button
 										onClick={handleConfirm}
+										disabled={actionLoading}
 										className='bg-yellow-600 px-4 py-2 rounded'>
-										Confirm
+										{actionLoading ? 'Saving...' : 'Confirm'}
 									</button>
 								</div>
 							</Dialog.Panel>
