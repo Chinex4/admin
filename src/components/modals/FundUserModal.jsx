@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fragment } from 'react';
@@ -14,11 +14,13 @@ const FundUserModal = () => {
 	const [wallets, setWallets] = useState([]);
 	const [walletsLoading, setWalletsLoading] = useState(false);
 	const [amountUsd, setAmountUsd] = useState('');
-	const [coinAmount, setCoinAmount] = useState('');
 	const [symbol, setSymbol] = useState('');
 	const [network, setNetwork] = useState('');
 	const [account, setAccount] = useState('spotAccount');
 	const [note, setNote] = useState('');
+	const [coinDropdownOpen, setCoinDropdownOpen] = useState(false);
+	const [coinSearch, setCoinSearch] = useState('');
+	const coinDropdownRef = useRef(null);
 
 	const parseList = (value) => {
 		if (Array.isArray(value)) {
@@ -42,6 +44,27 @@ const FundUserModal = () => {
 				.filter(Boolean);
 		}
 		return [trimmed];
+	};
+
+	const parseBalances = (value) => {
+		if (Array.isArray(value)) return value;
+		if (!value) return [];
+		if (typeof value === 'object') {
+			return Array.isArray(value?.balances) ? value.balances : [];
+		}
+		if (typeof value !== 'string') return [];
+		try {
+			const parsed = JSON.parse(value);
+			if (Array.isArray(parsed)) return parsed;
+			return Array.isArray(parsed?.balances) ? parsed.balances : [];
+		} catch {
+			return [];
+		}
+	};
+
+	const formatDecimal = (value, maxDecimals = 12) => {
+		if (!Number.isFinite(value)) return '';
+		return value.toFixed(maxDecimals).replace(/\.?0+$/, '');
 	};
 
 	useEffect(() => {
@@ -72,10 +95,154 @@ const FundUserModal = () => {
 		loadWallets();
 	}, []);
 
+	useEffect(() => {
+		setAccount('spotAccount');
+	}, [selectedUser?.accToken]);
+
+	useEffect(() => {
+		setCoinSearch('');
+		setCoinDropdownOpen(false);
+	}, [selectedUser?.accToken]);
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (!coinDropdownRef.current) return;
+			if (!coinDropdownRef.current.contains(event.target)) {
+				setCoinDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
+
 	const selectedWallet = useMemo(() => {
 		const normalized = String(symbol || '').toUpperCase();
 		return wallets.find((w) => String(w?.symbol || '').toUpperCase() === normalized);
 	}, [wallets, symbol]);
+
+	const userBalances = useMemo(() => {
+		const balancesSource =
+			selectedUser?.balances_json ??
+			selectedUser?.balancesJson ??
+			selectedUser?.balances;
+		return parseBalances(balancesSource);
+	}, [selectedUser]);
+
+	const userBalanceLookup = useMemo(() => {
+		const byId = new Map();
+		const bySymbol = new Map();
+
+		userBalances.forEach((entry) => {
+			const entryId = String(entry?.id || entry?.coin_id || '')
+				.trim()
+				.toLowerCase();
+			const entrySymbol = String(entry?.symbol || entry?.coin_symbol || '')
+				.trim()
+				.toLowerCase();
+			const parsedBalance = Number(entry?.balance);
+			const normalizedBalance =
+				Number.isFinite(parsedBalance) && parsedBalance > 0 ? parsedBalance : 0;
+
+			if (entryId) byId.set(entryId, normalizedBalance);
+			if (entrySymbol) bySymbol.set(entrySymbol, normalizedBalance);
+		});
+
+		return { byId, bySymbol };
+	}, [userBalances]);
+
+	const orderedWallets = useMemo(() => {
+		const getWalletBalance = (wallet) => {
+			const walletCoinId = String(wallet?.coin_id || '')
+				.trim()
+				.toLowerCase();
+			const walletSymbol = String(wallet?.symbol || '')
+				.trim()
+				.toLowerCase();
+			if (walletCoinId && userBalanceLookup.byId.has(walletCoinId)) {
+				return userBalanceLookup.byId.get(walletCoinId);
+			}
+			if (walletSymbol && userBalanceLookup.bySymbol.has(walletSymbol)) {
+				return userBalanceLookup.bySymbol.get(walletSymbol);
+			}
+			return 0;
+		};
+
+		return [...wallets].sort((a, b) => {
+			const balanceDiff = getWalletBalance(b) - getWalletBalance(a);
+			if (balanceDiff !== 0) return balanceDiff;
+
+			const symbolA = String(a?.symbol || '');
+			const symbolB = String(b?.symbol || '');
+			return symbolA.localeCompare(symbolB, undefined, { sensitivity: 'base' });
+		});
+	}, [wallets, userBalanceLookup]);
+
+	const filteredWallets = useMemo(() => {
+		const query = String(coinSearch || '')
+			.trim()
+			.toLowerCase();
+		if (!query) return orderedWallets;
+
+		return orderedWallets.filter((wallet) => {
+			const walletSymbol = String(wallet?.symbol || '')
+				.trim()
+				.toLowerCase();
+			const walletName = String(wallet?.name || '')
+				.trim()
+				.toLowerCase();
+			const walletCoinId = String(wallet?.coin_id || '')
+				.trim()
+				.toLowerCase();
+			return (
+				walletSymbol.includes(query) ||
+				walletName.includes(query) ||
+				walletCoinId.includes(query)
+			);
+		});
+	}, [orderedWallets, coinSearch]);
+
+	const selectedCoinLabel = useMemo(() => {
+		if (!symbol) return 'Choose coin';
+		const matchedWallet = orderedWallets.find(
+			(wallet) => String(wallet?.symbol || '').toUpperCase() === symbol
+		);
+		if (!matchedWallet) return symbol;
+		const coinSymbol = String(matchedWallet?.symbol || '').toUpperCase();
+		return matchedWallet?.name ? `${coinSymbol} (${matchedWallet.name})` : coinSymbol;
+	}, [orderedWallets, symbol]);
+
+	const selectedCoinPriceUsd = useMemo(() => {
+		const coinId = String(selectedWallet?.coin_id || '')
+			.trim()
+			.toLowerCase();
+		const normalizedSymbol = String(symbol || '')
+			.trim()
+			.toLowerCase();
+
+		const matchedBalance = userBalances.find((entry) => {
+			const entryId = String(entry?.id || entry?.coin_id || '')
+				.trim()
+				.toLowerCase();
+			const entrySymbol = String(entry?.symbol || entry?.coin_symbol || '')
+				.trim()
+				.toLowerCase();
+			return (coinId && entryId === coinId) || (normalizedSymbol && entrySymbol === normalizedSymbol);
+		});
+		const parsedPrice = Number(matchedBalance?.price);
+		if (Number.isFinite(parsedPrice) && parsedPrice > 0) {
+			return parsedPrice;
+		}
+
+		const stableSymbols = ['usd', 'usdt', 'usdc', 'busd', 'fdusd', 'dai', 'tusd'];
+		if (stableSymbols.includes(normalizedSymbol)) {
+			return 1;
+		}
+
+		return null;
+	}, [userBalances, selectedWallet, symbol]);
 
 	const networkOptions = useMemo(() => {
 		const fromField = parseList(selectedWallet?.network);
@@ -105,9 +272,16 @@ const FundUserModal = () => {
 		minDeposits[selectedNetworkIndex] || minDeposits[0] || 'Not available';
 	const confirmationText =
 		confirmations[selectedNetworkIndex] || confirmations[0] || 'Not available';
+	const calculatedCoinAmount = useMemo(() => {
+		const parsedUsd = Number(amountUsd);
+		if (!Number.isFinite(parsedUsd) || parsedUsd <= 0) return '';
+		if (!Number.isFinite(selectedCoinPriceUsd) || selectedCoinPriceUsd <= 0) return '';
+		return formatDecimal(parsedUsd / selectedCoinPriceUsd, 12);
+	}, [amountUsd, selectedCoinPriceUsd]);
 
 	const handleFund = () => {
 		const parsedAmount = Number(amountUsd);
+		const parsedCoinAmount = Number(calculatedCoinAmount);
 		if (!selectedUser?.accToken) {
 			showError('No selected user');
 			return;
@@ -124,15 +298,21 @@ const FundUserModal = () => {
 			showError('Enter a valid USD amount');
 			return;
 		}
+		if (!Number.isFinite(selectedCoinPriceUsd) || selectedCoinPriceUsd <= 0) {
+			showError('Conversion price unavailable for selected coin');
+			return;
+		}
+		if (!Number.isFinite(parsedCoinAmount) || parsedCoinAmount <= 0) {
+			showError('Calculated coin amount is invalid');
+			return;
+		}
 
 		const payload = {
 			accToken: selectedUser.accToken,
 			symbol,
 			network,
 			amount_usd: String(parsedAmount),
-			coin_amount: coinAmount && Number.isFinite(Number(coinAmount))
-				? String(Math.abs(Number(coinAmount)))
-				: String(parsedAmount),
+			coin_amount: formatDecimal(Math.abs(parsedCoinAmount), 12),
 			account,
 			note: note.trim(),
 		};
@@ -194,24 +374,72 @@ const FundUserModal = () => {
 									<div className='grid md:grid-cols-2 gap-4'>
 										<div>
 											<label className='block mb-1'>Select coin</label>
-											<select
-												value={symbol}
-												onChange={(e) => setSymbol(e.target.value)}
-												className='input-dark'
-												disabled={walletsLoading}>
-												<option value=''>Choose coin</option>
-												{wallets.map((w) => {
-													const value = String(w?.symbol || '').toUpperCase();
-													const label = `${value} ${w?.name ? `(${w.name})` : ''}`;
-													return (
-														<option
-															key={w?.id || value}
-															value={value}>
-															{label}
-														</option>
-													);
-												})}
-											</select>
+											<div
+												className='relative'
+												ref={coinDropdownRef}>
+												<button
+													type='button'
+													onClick={() =>
+														!walletsLoading &&
+														orderedWallets.length > 0 &&
+														setCoinDropdownOpen((prev) => !prev)
+													}
+													className='input-dark w-full text-left flex items-center justify-between'
+													disabled={walletsLoading}>
+													<span>{selectedCoinLabel}</span>
+													<span className='muted-text'>{coinDropdownOpen ? '▴' : '▾'}</span>
+												</button>
+
+												{coinDropdownOpen && (
+													<div className='absolute z-50 mt-2 w-full rounded-lg border border-slate-700 bg-[#061428] shadow-xl'>
+														<div className='sticky top-0 z-10 p-2 border-b border-slate-700 bg-[#061428]'>
+															<input
+																type='text'
+																value={coinSearch}
+																onChange={(e) => setCoinSearch(e.target.value)}
+																className='input-dark w-full'
+																placeholder='Search coin'
+																autoFocus
+															/>
+														</div>
+														<div className='max-h-64 overflow-y-auto py-1'>
+															<button
+																type='button'
+																className='w-full text-left px-4 py-2 hover:bg-blue-700/30'
+																onClick={() => {
+																	setSymbol('');
+																	setCoinDropdownOpen(false);
+																}}>
+																Choose coin
+															</button>
+															{filteredWallets.map((w) => {
+																const value = String(w?.symbol || '').toUpperCase();
+																const label = `${value} ${w?.name ? `(${w.name})` : ''}`;
+																return (
+																	<button
+																		type='button'
+																		key={w?.id || value}
+																		className='w-full text-left px-4 py-2 hover:bg-blue-700/30'
+																		onClick={() => {
+																			setSymbol(value);
+																			setCoinDropdownOpen(false);
+																		}}>
+																		{label}
+																	</button>
+																);
+															})}
+															{filteredWallets.length === 0 && (
+																<p className='px-4 py-2 muted-text text-xs'>
+																	No coins match your search
+																</p>
+															)}
+														</div>
+													</div>
+												)}
+											</div>
+											{!walletsLoading && orderedWallets.length === 0 && (
+												<p className='muted-text text-xs mt-1'>No coins available</p>
+											)}
 										</div>
 										<div>
 											<label className='block mb-1'>Select network</label>
@@ -249,11 +477,16 @@ const FundUserModal = () => {
 											</label>
 											<input
 												type='number'
-												value={coinAmount}
-												onChange={(e) => setCoinAmount(e.target.value)}
+												value={calculatedCoinAmount}
+												readOnly
 												className='input-dark'
-												placeholder='Auto uses USD amount if empty'
+												placeholder='Auto-calculated from USD'
 											/>
+											<p className='muted-text text-xs mt-1'>
+												{Number.isFinite(selectedCoinPriceUsd) && selectedCoinPriceUsd > 0
+													? `1 ${symbol || 'COIN'} = $${formatDecimal(selectedCoinPriceUsd, 8)}`
+													: 'Conversion price unavailable'}
+											</p>
 										</div>
 									</div>
 
