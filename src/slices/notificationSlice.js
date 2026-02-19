@@ -14,8 +14,29 @@ const initialState = {
   actionError: null,
 };
 
-const matchesNotification = (item, id) =>
-  String(item?.id) === String(id) || String(item?.notificationId) === String(id);
+const toComparableId = (value) =>
+  value === null || value === undefined ? '' : String(value).trim();
+
+const matchesNotification = (item, id) => {
+  const target = toComparableId(id);
+  if (!target) return false;
+  return (
+    toComparableId(item?.id) === target ||
+    toComparableId(item?.notificationId) === target ||
+    toComparableId(item?.notification_id) === target
+  );
+};
+
+const normalizeIncomingRecord = (response) => {
+  if (!response || typeof response !== 'object') return {};
+  if (response.record && typeof response.record === 'object') {
+    return response.record;
+  }
+  if (response.notification && typeof response.notification === 'object') {
+    return response.notification;
+  }
+  return response;
+};
 
 const notificationSlice = createSlice({
   name: 'notifications',
@@ -48,7 +69,7 @@ const notificationSlice = createSlice({
       })
       .addCase(createNotification.fulfilled, (state, action) => {
         state.actionLoading = false;
-        const incoming = action.payload;
+        const incoming = normalizeIncomingRecord(action.payload);
         if (incoming && typeof incoming === 'object') {
           state.list.unshift(incoming);
         }
@@ -68,7 +89,7 @@ const notificationSlice = createSlice({
           matchesNotification(item, id)
         );
         if (index === -1) return;
-        const incoming = response && typeof response === 'object' ? response : {};
+        const incoming = normalizeIncomingRecord(response);
         state.list[index] = {
           ...state.list[index],
           ...payload,

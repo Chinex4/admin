@@ -223,3 +223,87 @@ export const addUserLoss = createAsyncThunk(
 		}
 	}
 );
+
+export const disableUserTrade = createAsyncThunk(
+	'admin/disableUserTrade',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/disableTrade/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to disable user trade');
+		}
+	}
+);
+
+export const enableUserTrade = createAsyncThunk(
+	'admin/enableUserTrade',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/enableTrade/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to enable user trade');
+		}
+	}
+);
+
+export const disableUserDeposit = createAsyncThunk(
+	'admin/disableUserDeposit',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/disableDeposit/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to disable user deposits');
+		}
+	}
+);
+
+export const enableUserDeposit = createAsyncThunk(
+	'admin/enableUserDeposit',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/enableDeposit/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to enable user deposits');
+		}
+	}
+);
+
+export const disableUserWithdrawal = createAsyncThunk(
+	'admin/disableUserWithdrawal',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/disableWithdrawal/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to disable user withdrawals');
+		}
+	}
+);
+
+export const enableUserWithdrawal = createAsyncThunk(
+	'admin/enableUserWithdrawal',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/enableWithdrawal/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to enable user withdrawals');
+		}
+	}
+);
+
+export const logoutUserSession = createAsyncThunk(
+	'admin/logoutUserSession',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const res = await axiosInstance.patch(`admin/logoutUser/${userId}`);
+			return res;
+		} catch (err) {
+			return rejectWithValue(err || 'Failed to log out user session');
+		}
+	}
+);

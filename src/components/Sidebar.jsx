@@ -15,14 +15,13 @@ const items = [
     routes: [
       '/dashboard/viewDeposits',
       '/dashboard/viewWithdrawal',
-      '/dashboard/viewProfits',
-      '/dashboard/viewLosses',
+      '/dashboard/viewFundTransfers',
     ],
     children: [
       { to: '/dashboard/viewDeposits', text: 'About Deposit' },
-      { to: '/dashboard/viewWithdrawal', text: 'About Crypto Withdrawal' },
-      { to: '/dashboard/viewProfits', text: 'About Profit' },
-      { to: '/dashboard/viewLosses', text: 'About Loss' },
+      { to: '/dashboard/viewWithdrawal', text: 'About onchain Withdrawal' },
+
+      { to: '/dashboard/viewFundTransfers', text: 'Internal Transfer' },
     ],
   },
   {
@@ -51,7 +50,9 @@ const items = [
     icon: 'bi-bell',
     label: 'Notifications',
     routes: ['/dashboard/viewNotifications'],
-    children: [{ to: '/dashboard/viewNotifications', text: 'View Notifications' }],
+    children: [
+      { to: '/dashboard/viewNotifications', text: 'View Notifications' },
+    ],
   },
   {
     icon: 'bi-graph-up',
@@ -123,23 +124,23 @@ const items = [
     routes: ['/dashboard/viewAllStaking'],
     children: [{ to: '/dashboard/viewAllStaking', text: 'View all Staking' }],
   },
-	{
-		icon: 'bi-clipboard-check',
-		label: 'Stake Request',
-		routes: ['/dashboard/viewAllStakeRequest'],
-		children: [
-			{ to: '/dashboard/viewAllStakeRequest', text: 'View all Stake Request' },
-		],
-	},
-	{
-		icon: 'bi-arrow-left-right',
-		label: 'P2P',
-		routes: ['/dashboard/viewP2POrders', '/dashboard/p2p'],
-		children: [
-			{ to: '/dashboard/viewP2POrders', text: 'View P2P Orders' },
-			{ to: '/dashboard/p2p', text: 'P2P' },
-		],
-	},
+  {
+    icon: 'bi-clipboard-check',
+    label: 'Stake Request',
+    routes: ['/dashboard/viewAllStakeRequest'],
+    children: [
+      { to: '/dashboard/viewAllStakeRequest', text: 'View all Stake Request' },
+    ],
+  },
+  {
+    icon: 'bi-arrow-left-right',
+    label: 'P2P',
+    routes: ['/dashboard/viewP2POrders', '/dashboard/p2p'],
+    children: [
+      { to: '/dashboard/viewP2POrders', text: 'View P2P Orders' },
+      { to: '/dashboard/p2p', text: 'P2P' },
+    ],
+  },
   {
     icon: 'bi-box-arrow-in-right',
     label: 'Login',

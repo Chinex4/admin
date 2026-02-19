@@ -21,22 +21,26 @@ import { showError, showSuccess } from '../../utils/toast';
 const TABLE_COLUMNS = [
   { key: 'id', label: 'ID' },
   { key: 'transferId', label: 'Transfer ID' },
-  { key: 'userId', label: 'User ID' },
-  { key: 'fromAccount', label: 'From Account' },
-  { key: 'toAccount', label: 'To Account' },
+  { key: 'senderUserId', label: 'Sender User ID' },
+  { key: 'recipientUserId', label: 'Recipient User ID' },
+  { key: 'senderUid', label: 'Sender UID' },
+  { key: 'recipientUid', label: 'Recipient UID' },
+  { key: 'senderEmail', label: 'Sender Email' },
+  { key: 'recipientEmail', label: 'Recipient Email' },
   { key: 'asset', label: 'Asset' },
-  { key: 'amount', label: 'Amount' },
-  { key: 'amountUsd', label: 'Amount (USD)' },
-  { key: 'coinQuantity', label: 'Coin Quantity' },
-  { key: 'spotAccountBefore', label: 'Spot Account Before' },
-  { key: 'spotAccountAfter', label: 'Spot Account After' },
-  { key: 'futureAccountBefore', label: 'Future Account Before' },
-  { key: 'futureAccountAfter', label: 'Future Account After' },
-  { key: 'totalAssetAfter', label: 'Total Asset After' },
+  { key: 'coin_id', label: 'Coin ID' },
+  { key: 'coin_amount', label: 'Coin Amount' },
+  { key: 'amount_usd', label: 'Amount (USD)' },
+  { key: 'price_usd', label: 'Price (USD)' },
+  { key: 'recipientType', label: 'Recipient Type' },
+  { key: 'recipientValue', label: 'Recipient Value' },
   { key: 'status', label: 'Status' },
-  { key: 'rawRequest', label: 'Raw Request' },
   { key: 'createdAt', label: 'Created At' },
+  { key: 'updatedAt', label: 'Updated At' },
+  { key: 'ipAddress', label: 'IP Address' },
 ];
+
+const RAW_DATA_KEYS = ['rawRequest', 'fields'];
 
 const EDITABLE_KEYS = TABLE_COLUMNS.map((column) => column.key).filter(
   (key) => key !== 'id'
@@ -55,23 +59,27 @@ const toInputString = (value) => {
 };
 
 const normalizeTransfer = (item = {}, index = 0) => ({
-  id: item?.id ?? item?.transferId ?? `row-${index}`,
-  transferId: item?.transferId ?? '',
-  userId: item?.userId ?? '',
-  fromAccount: item?.fromAccount ?? '',
-  toAccount: item?.toAccount ?? '',
+  id: item?.id ?? item?.transferId ?? item?.transfer_id ?? `row-${index}`,
+  transferId: item?.transferId ?? item?.transfer_id ?? '',
+  senderUserId: item?.senderUserId ?? item?.sender_user_id ?? '',
+  recipientUserId: item?.recipientUserId ?? item?.recipient_user_id ?? '',
+  senderUid: item?.senderUid ?? item?.sender_uid ?? '',
+  recipientUid: item?.recipientUid ?? item?.recipient_uid ?? '',
+  senderEmail: item?.senderEmail ?? item?.sender_email ?? '',
+  recipientEmail: item?.recipientEmail ?? item?.recipient_email ?? '',
   asset: item?.asset ?? '',
-  amount: item?.amount ?? '',
-  amountUsd: item?.amountUsd ?? '',
-  coinQuantity: item?.coinQuantity ?? '',
-  spotAccountBefore: item?.spotAccountBefore ?? '',
-  spotAccountAfter: item?.spotAccountAfter ?? '',
-  futureAccountBefore: item?.futureAccountBefore ?? '',
-  futureAccountAfter: item?.futureAccountAfter ?? '',
-  totalAssetAfter: item?.totalAssetAfter ?? '',
+  coin_id: item?.coin_id ?? item?.coinId ?? '',
+  coin_amount: item?.coin_amount ?? item?.coinAmount ?? '',
+  amount_usd: item?.amount_usd ?? item?.amountUsd ?? '',
+  price_usd: item?.price_usd ?? item?.priceUsd ?? '',
+  recipientType: item?.recipientType ?? item?.recipient_type ?? '',
+  recipientValue: item?.recipientValue ?? item?.recipient_value ?? '',
   status: item?.status ?? '',
-  rawRequest: item?.rawRequest ?? '',
-  createdAt: item?.createdAt ?? '',
+  createdAt: item?.createdAt ?? item?.created_at ?? '',
+  updatedAt: item?.updatedAt ?? item?.updated_at ?? '',
+  ipAddress: item?.ipAddress ?? item?.ip_address ?? '',
+  rawRequest: item?.rawRequest ?? item?.raw_request ?? '',
+  fields: item?.fields ?? '',
 });
 
 const formatValue = (value) => {
@@ -91,7 +99,7 @@ const formatValue = (value) => {
 const parseEditValue = (key, value) => {
   const trimmed = String(value ?? '').trim();
   if (trimmed === '') return '';
-  if (key === 'rawRequest') {
+  if (RAW_DATA_KEYS.includes(key)) {
     try {
       return JSON.parse(trimmed);
     } catch {
@@ -124,6 +132,7 @@ const FundTransfersPage = () => {
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [transferToDelete, setTransferToDelete] = useState(null);
+  const [actionTransfer, setActionTransfer] = useState(null);
 
   const transfers = useMemo(
     () => list.map((item, index) => normalizeTransfer(item, index)),
@@ -224,6 +233,30 @@ const FundTransfersPage = () => {
     setTransferToDelete(null);
   };
 
+  const openActionModal = (transfer) => {
+    if (!transfer) return;
+    setActionTransfer(transfer);
+  };
+
+  const closeActionModal = () => {
+    if (actionLoading) return;
+    setActionTransfer(null);
+  };
+
+  const handleActionEdit = () => {
+    if (!actionTransfer) return;
+    const transfer = actionTransfer;
+    setActionTransfer(null);
+    openEditModal(transfer);
+  };
+
+  const handleActionDelete = () => {
+    if (!actionTransfer) return;
+    const transfer = actionTransfer;
+    setActionTransfer(null);
+    openDeleteModal(transfer);
+  };
+
   const confirmDelete = async () => {
     const actionId = getActionId(transferToDelete);
     if (!actionId) {
@@ -272,7 +305,6 @@ const FundTransfersPage = () => {
             <table className="table-base">
               <thead className="table-head sticky top-0 z-20 bg-slate-900/80 backdrop-blur">
                 <tr>
-                  <th className="px-3 py-2 whitespace-nowrap">No.</th>
                   {TABLE_COLUMNS.map((column) => (
                     <th key={column.key} className="px-3 py-2 whitespace-nowrap">
                       {column.label}
@@ -286,7 +318,7 @@ const FundTransfersPage = () => {
                   <tr className="table-row">
                     <td
                       className="px-3 py-3 whitespace-nowrap"
-                      colSpan={TABLE_COLUMNS.length + 2}
+                      colSpan={TABLE_COLUMNS.length + 1}
                     >
                       No fund transfer records found.
                     </td>
@@ -297,30 +329,26 @@ const FundTransfersPage = () => {
                       key={getActionId(transfer) || `transfer-row-${index}`}
                       className="table-row"
                     >
-                      <td className="px-3 py-2 whitespace-nowrap">{index + 1}</td>
                       {TABLE_COLUMNS.map((column) => (
                         <td
                           key={`${getActionId(transfer)}-${column.key}`}
                           className="px-3 py-2 whitespace-nowrap"
                         >
-                          {formatValue(transfer[column.key])}
+                          {column.key === 'id'
+                            ? index + 1
+                            : formatValue(transfer[column.key])}
                         </td>
                       ))}
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
-                            className="button-ghost text-xs"
-                            onClick={() => openEditModal(transfer)}
+                            type="button"
+                            className="button-ghost text-xs px-2 py-1"
+                            onClick={() => openActionModal(transfer)}
                             disabled={actionLoading}
+                            aria-label="Open actions"
                           >
-                            Edit
-                          </button>
-                          <button
-                            className="button-ghost text-xs text-rose-300"
-                            onClick={() => openDeleteModal(transfer)}
-                            disabled={actionLoading}
-                          >
-                            Delete
+                            <i className="bi bi-three-dots-vertical" />
                           </button>
                         </div>
                       </td>
@@ -374,11 +402,14 @@ const FundTransfersPage = () => {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {EDITABLE_KEYS.map((key) => (
-                      <div key={key} className={key === 'rawRequest' ? 'sm:col-span-2' : ''}>
+                      <div
+                        key={key}
+                        className={RAW_DATA_KEYS.includes(key) ? 'sm:col-span-2' : ''}
+                      >
                         <label className="mb-1 block text-xs text-slate-300">
                           {formatLabel(key)}
                         </label>
-                        {key === 'rawRequest' ? (
+                        {RAW_DATA_KEYS.includes(key) ? (
                           <textarea
                             rows={6}
                             className="input-dark w-full text-xs"
@@ -426,6 +457,72 @@ const FundTransfersPage = () => {
                       disabled={actionLoading}
                     >
                       {actionLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={Boolean(actionTransfer)} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={closeActionModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-150"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/70" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto p-4">
+            <div className="flex min-h-full items-center justify-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-200"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-150"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-sm rounded-xl modal-panel p-6">
+                  <Dialog.Title className="text-lg font-semibold text-white">
+                    Transfer Actions
+                  </Dialog.Title>
+                  <p className="mt-2 text-xs text-slate-300">
+                    Choose an action for transfer {getActionId(actionTransfer)}.
+                  </p>
+
+                  <div className="mt-4 space-y-2">
+                    <button
+                      type="button"
+                      className="button-primary w-full text-sm"
+                      onClick={handleActionEdit}
+                      disabled={actionLoading}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="button-ghost w-full text-sm text-rose-300 border border-rose-300/40"
+                      onClick={handleActionDelete}
+                      disabled={actionLoading}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      className="button-ghost w-full text-sm"
+                      onClick={closeActionModal}
+                      disabled={actionLoading}
+                    >
+                      Cancel
                     </button>
                   </div>
                 </Dialog.Panel>

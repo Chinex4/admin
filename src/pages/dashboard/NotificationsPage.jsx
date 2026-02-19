@@ -21,16 +21,32 @@ import { showError, showSuccess } from '../../utils/toast';
 
 const TABLE_COLUMNS = [
   { key: 'id', label: 'ID' },
+  { key: 'userid', label: 'User ID' },
+  { key: 'messageHeader', label: 'Message Header' },
+  { key: 'content', label: 'Content' },
+  { key: 'sent_at', label: 'Sent At' },
+  { key: 'read_at', label: 'Read At' },
+  { key: 'status', label: 'Status' },
+  { key: 'notificationId', label: 'Notification ID' },
   { key: 'title', label: 'Title' },
   { key: 'body', label: 'Body' },
   { key: 'createdAt', label: 'Created At' },
+  { key: 'updatedAt', label: 'Updated At' },
 ];
 
 const normalizeNotification = (item = {}, index = 0) => ({
-  id: item?.id ?? item?.notificationId ?? `row-${index}`,
-  title: item?.title ?? '',
-  body: item?.body ?? '',
-  createdAt: item?.createdAt ?? '',
+  id: item?.id ?? item?.notificationId ?? item?.notification_id ?? `row-${index}`,
+  userid: item?.userid ?? item?.userId ?? item?.user_id ?? '',
+  messageHeader: item?.messageHeader ?? item?.message_header ?? item?.title ?? '',
+  content: item?.content ?? item?.body ?? '',
+  sent_at: item?.sent_at ?? item?.sentAt ?? '',
+  read_at: item?.read_at ?? item?.readAt ?? '',
+  status: item?.status ?? '',
+  notificationId: item?.notificationId ?? item?.notification_id ?? item?.id ?? '',
+  title: item?.title ?? item?.messageHeader ?? item?.message_header ?? '',
+  body: item?.body ?? item?.content ?? '',
+  createdAt: item?.createdAt ?? item?.created_at ?? '',
+  updatedAt: item?.updatedAt ?? item?.updated_at ?? '',
 });
 
 const formatValue = (value) => {
@@ -40,8 +56,14 @@ const formatValue = (value) => {
 };
 
 const getActionId = (item) => {
-  const value = item?.id ?? item?.notificationId;
+  const value = item?.id ?? item?.notificationId ?? item?.notification_id;
   return value === null || value === undefined ? '' : String(value).trim();
+};
+
+const hasNotificationId = (item, id) => {
+  const target = String(id ?? '').trim();
+  if (!target) return false;
+  return getActionId(item) === target;
 };
 
 const NotificationsPage = () => {
@@ -68,7 +90,9 @@ const NotificationsPage = () => {
     const query = search.trim().toLowerCase();
     if (!query) return notifications;
     return notifications.filter((item) =>
-      [item.title, item.body, item.createdAt].join(' ').toLowerCase().includes(query)
+      TABLE_COLUMNS.some((column) =>
+        String(formatValue(item[column.key])).toLowerCase().includes(query)
+      )
     );
   }, [notifications, search]);
 
@@ -116,16 +140,20 @@ const NotificationsPage = () => {
     setMode('edit');
     setSelectedNotification(item);
     setForm({
-      title: String(item.title ?? ''),
-      body: String(item.body ?? ''),
+      title: String(item.title ?? item.messageHeader ?? ''),
+      body: String(item.body ?? item.content ?? ''),
     });
     setIsModalOpen(true);
   };
 
   const handleSave = async () => {
+    const title = String(form.title ?? '').trim();
+    const body = String(form.body ?? '').trim();
     const payload = {
-      title: String(form.title ?? '').trim(),
-      body: String(form.body ?? '').trim(),
+      title,
+      body,
+      messageHeader: title,
+      content: body,
     };
     if (!payload.title || !payload.body) {
       showError('Title and body are required');
@@ -183,6 +211,16 @@ const NotificationsPage = () => {
     dispatch(clearNotificationActionError());
     try {
       await dispatch(deleteNotification(actionId)).unwrap();
+      const refreshedList = await dispatch(fetchNotifications()).unwrap();
+      const stillExists = Array.isArray(refreshedList)
+        ? refreshedList.some((item) => hasNotificationId(item, actionId))
+        : false;
+      if (stillExists) {
+        showError(
+          'Delete request sent but notification still exists on backend. Please check API delete route.'
+        );
+        return;
+      }
       showSuccess('Notification deleted');
       setNotificationToDelete(null);
     } catch (err) {
