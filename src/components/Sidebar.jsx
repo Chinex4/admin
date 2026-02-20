@@ -47,6 +47,14 @@ const items = [
     children: [{ to: '/dashboard/viewReferrals', text: 'View Referrals' }],
   },
   {
+    icon: 'bi-person-x',
+    label: 'Disabled Accounts',
+    routes: ['/dashboard/viewDisabledAccounts'],
+    children: [
+      { to: '/dashboard/viewDisabledAccounts', text: 'View Disabled Accounts' },
+    ],
+  },
+  {
     icon: 'bi-bell',
     label: 'Notifications',
     routes: ['/dashboard/viewNotifications'],

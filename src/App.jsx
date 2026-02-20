@@ -28,6 +28,7 @@ import FundTransfersPage from './pages/dashboard/FundTransfersPage';
 import ConvertOrdersPage from './pages/dashboard/ConvertOrdersPage';
 import ReferralsPage from './pages/dashboard/ReferralsPage';
 import NotificationsPage from './pages/dashboard/NotificationsPage';
+import DisabledAccountsPage from './pages/dashboard/DisabledAccountsPage';
 
 function App() {
 	return (
@@ -106,6 +107,10 @@ function App() {
 					<Route
 						path='viewNotifications'
 						element={<NotificationsPage />}
+					/>
+					<Route
+						path='viewDisabledAccounts'
+						element={<DisabledAccountsPage />}
 					/>
 					<Route
 						path='viewTrades'
